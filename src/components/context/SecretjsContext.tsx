@@ -17,6 +17,7 @@ declare global {
 
 interface IContextProps {
   secretjs: SecretNetworkClient | undefined;
+  keplrReady: boolean;
 }
 
 export const SecretjsContext = createContext({} as IContextProps);
@@ -26,6 +27,7 @@ export const SecretjsContextProvider: React.FC<SecretjsContextProps> = (
   props
 ) => {
   const [secretjs, setSecretjs] = useState<SecretNetworkClient>();
+  const [keplrReady, setKeplrReady] = useState<boolean>(false);
 
   const setupKeplr = async () => {
     const sleep = (ms: number) =>
@@ -56,6 +58,7 @@ export const SecretjsContextProvider: React.FC<SecretjsContextProps> = (
     });
 
     setSecretjs(secretjs);
+    setKeplrReady(true);
   };
 
   useEffect(() => {
@@ -65,7 +68,7 @@ export const SecretjsContextProvider: React.FC<SecretjsContextProps> = (
   }, []);
 
   return (
-    <SecretjsContext.Provider value={{ secretjs }}>
+    <SecretjsContext.Provider value={{ secretjs, keplrReady }}>
       {props.children}
     </SecretjsContext.Provider>
   );

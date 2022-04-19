@@ -16,37 +16,83 @@ code {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.clear-fix {
+  overflow: auto;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+.modal-wrapper {
+  display: none;
+  background: rgba(248, 248, 248, 0.815);
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  height: 100%;
+  width: 100%;
+  padding-right: 0.5%;
+  overflow-y: hidden;
+  
 }
+
+.modal-wrapper.active {
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
+}
+
+/* .modal {
+  width: 100%;
+  height: 100%;
+  max-width: 98%;
+  max-height: 88%;
+  margin: 1%;
+  background: rgba(232, 234, 235, 0.89);
+  border-radius: 4px;
+  position: relative;
+  .close {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 24px;
+    line-height: 36px;
+    border-radius: 0 4px 0 0;
+    background: transparent;
+    color: $gray-medium;
+    cursor: pointer;
+    &:hover {
+      background: $gray-dark-bg;
+    }
+  }
+  .object-name {
+    // background: $gray-medium-bg;
+    border-radius: 0 0 4px 4px;
+    position: relative;
+    padding: 0;
+    margin-bottom: 2px;
+  }
+  iframe {
+    width: 100%;
+    max-width: 2500px;
+    margin: 0 auto;
+    position: absolute;
+    width: 100%;
+    height: 93%;
+    top: 0;
+    left: 0;
+    margin-top: 3.3%;
+    // z-index: -1;
+  }
+} */
