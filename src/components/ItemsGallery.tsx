@@ -9,7 +9,7 @@ interface ItemsGalleryProps {
 }
 
 export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
-  const { stores, dispatch } = useContext(StoresContext);
+  const { stores, asyncDispatch } = useContext(StoresContext);
 
   const [itemQuickView, setItemQuickView] = useState<ItemData>();
   const [modalActive, setModalActive] = useState<boolean>(false);
@@ -26,9 +26,11 @@ export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
   };
 
   useEffect(() => {
-    dispatch({
+    asyncDispatch({
       type: STORE_ACTIONS.LOAD_ITEMS,
-      category,
+      data: {
+        category,
+      },
     });
   }, []);
 
@@ -36,7 +38,7 @@ export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
     stores[category],
     searchPhrase,
     openModal,
-    dispatch,
+    asyncDispatch,
     category
   );
 

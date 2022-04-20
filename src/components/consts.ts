@@ -28,11 +28,18 @@ export const STORE_ACTIONS = {
   REMOVE_ITEM: "REMOVE_ITEM"
 }
 
-export type StoreAction = {
-  type: string;
+export type StoreActionData = {
   category: string;
   item?: ItemData;
+  items?: ItemData[];
   id?: number;
 }
 
-export type dispatchFunc =  ({ type, category, item, id }: StoreAction) => void;
+export type StoreAction = {
+  type: string;
+  data: StoreActionData
+}
+
+export type DispatchFunc =  ({ type, data }: StoreAction) => void;
+export type AsyncDispatchFunc = (action: StoreAction) => void;
+

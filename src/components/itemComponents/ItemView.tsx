@@ -1,12 +1,12 @@
 import { debug } from "console";
 import React from "react";
-import { dispatchFunc, ItemData, STORE_ACTIONS } from "../consts";
+import { DispatchFunc, ItemData, STORE_ACTIONS } from "../consts";
 
 interface ItemViewProps {
   index: number;
   item: ItemData;
   openModal: (item: ItemData) => void;
-  dispatch: dispatchFunc;
+  asyncDispatch: DispatchFunc;
   category: string;
 }
 
@@ -14,7 +14,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
   index,
   item,
   openModal,
-  dispatch,
+  asyncDispatch,
   category,
 }) => {
   return (
@@ -23,10 +23,12 @@ export const ItemView: React.FC<ItemViewProps> = ({
       <div className="object">
         <button
           onClick={() =>
-            dispatch({
+            asyncDispatch({
               type: STORE_ACTIONS.REMOVE_ITEM,
-              category,
-              id: item.id,
+              data: {
+                category,
+                id: item.id,
+              },
             })
           }
         >

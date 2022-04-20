@@ -9,11 +9,9 @@ const App: React.FC<AppProps> = ({}) => {
   return (
     <div className="App">
       <SecretjsContextProvider>
-        <header className="App-header">
-          <Header />
-          <CategoryTabs />
-          <Footer />
-        </header>
+        <Header />
+        <CategoryTabs />
+        <Footer />
       </SecretjsContextProvider>
     </div>
   );

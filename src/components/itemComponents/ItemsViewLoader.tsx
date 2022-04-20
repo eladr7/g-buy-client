@@ -2,7 +2,7 @@ import React from "react";
 
 import { ItemView } from "./ItemView";
 import NoResults from "./NoResults";
-import { CategoryStore, dispatchFunc, ItemData } from "../consts";
+import { AsyncDispatchFunc, CategoryStore, ItemData } from "../consts";
 
 const ItemsViewLoader = {
   // @private
@@ -12,7 +12,7 @@ const ItemsViewLoader = {
   getItemsView(
     items: ItemData[],
     openModalFunction: (item: ItemData) => void,
-    dispatch: dispatchFunc,
+    asyncDispatch: AsyncDispatchFunc,
     category: string
   ) {
     if (items.length <= 0) {
@@ -26,7 +26,7 @@ const ItemsViewLoader = {
             index={index}
             item={item}
             openModal={openModalFunction}
-            dispatch={dispatch}
+            asyncDispatch={asyncDispatch}
             category={category}
           />
         ))}
@@ -57,7 +57,7 @@ const ItemsViewLoader = {
     categoryStore: CategoryStore,
     searchPhrase: string,
     openModalFunction: (item: ItemData) => void,
-    dispatch: dispatchFunc,
+    asyncDispatch: AsyncDispatchFunc,
     category: string
   ) {
     const filterredItems = this.filterItems(categoryStore, searchPhrase);
@@ -65,7 +65,7 @@ const ItemsViewLoader = {
     const objectsViews = this.getItemsView(
       filterredItems,
       openModalFunction,
-      dispatch,
+      asyncDispatch,
       category
     );
     return objectsViews;
