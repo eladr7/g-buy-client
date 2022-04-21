@@ -3,7 +3,7 @@ import { findDOMNode } from "react-dom";
 import {
   ItemData,
   ItemQuickViewData,
-  ItemUserDetails,
+  UserItemDetails,
   STORE_ACTIONS,
 } from "../consts";
 import { StoresContext } from "../context/StoresContextProvider";
@@ -21,13 +21,28 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   closeModal,
   category,
 }) => {
+  const [url, setUrl] = useState<string>("");
+  const [imgUrl, setImgUrl] = useState<string>("");
+
+  const [itemName, setItemName] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
+  const [wantedPrice, setWantedPrice] = useState<number>(0);
+  const [groupSizeGoal, setGroupSizeGoal] = useState<number>(0);
+
   const [quantity, setQuantity] = useState<number>(0);
   const [email, setEmail] = useState<string>();
-  const [deliveryAddress, setDeliveryAddress] = useState<string>();
+  const [deliveryAddress, setDeliveryAddress] = useState<string>("");
 
   const { asyncDispatch } = useContext(StoresContext);
 
   useEffect(() => {
+    if (itemQuickViewData?.item) {
+      setItemName(itemQuickViewData.item.name);
+      setPrice(itemQuickViewData.item.price);
+      setWantedPrice(itemQuickViewData.item.wantedPrice);
+      setGroupSizeGoal(itemQuickViewData.item.groupSizeGoal);
+    }
+
     if (itemQuickViewData?.usersItemDetails) {
       setQuantity(itemQuickViewData.usersItemDetails.quantity);
       setEmail(itemQuickViewData.usersItemDetails.email);
@@ -49,17 +64,37 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   };
 
   const updateUser = () => {
-    let userUpdateData: ItemUserDetails = {
+    let userUpdateData: UserItemDetails = {
       accountAddress: itemQuickViewData!.accountAddress,
       deliveryAddress: deliveryAddress!,
       email: email!,
       quantity: quantity!,
     };
 
-    // if (!itemQuickViewData) {
-    //   // Creation of a new item
-    //   return;
-    // }
+    if (!itemQuickViewData?.item) {
+      // Add a new item!
+
+      let itemData: ItemData = {
+        name: itemName,
+        category,
+        url,
+        imgUrl: imgUrl,
+        creatorAddress: itemQuickViewData!.accountAddress,
+        price,
+        wantedPrice,
+        groupSizeGoal,
+        // currentGroupSize: 0,
+        usersDetails: [userUpdateData],
+      };
+      asyncDispatch({
+        type: STORE_ACTIONS.APPEND_ITEM,
+        data: {
+          category,
+          item: itemData,
+        },
+      });
+      return;
+    }
 
     // Update an existing item
     // Elad: Check something changed
@@ -67,49 +102,138 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     // if (initialQuantity !== quantity) {
     //   alert("Nothing changed")
     // }
-
     asyncDispatch({
       type: STORE_ACTIONS.UPDATE_ITEM,
       data: {
         category,
-        url: itemQuickViewData!.item.url,
+        url: itemQuickViewData!.item!.url,
         userUpdateData,
       },
     });
   };
 
-  const userForm = (itemQuickViewData: ItemQuickViewData) => (
-    <form onSubmit={updateUser}>
-      <input
-        type="text"
-        name="account-address"
-        value={itemQuickViewData.accountAddress}
-        readOnly={itemQuickViewData.usersItemDetails !== null}
-      />
-      <input
-        type="email"
-        pattern=".+@[a-z0-9]+\.[a-z]{2,3}"
-        required
-        value={email}
-        // onChange={(e) => setEmail(e.target.value)}
-        readOnly={itemQuickViewData.usersItemDetails !== null}
-      />
-      <input
-        type="text"
-        name="delivery-address"
-        value={deliveryAddress}
-        // onChange={(e) => setDeliveryAddress(e.target.value)}
-        readOnly={itemQuickViewData.usersItemDetails !== null}
-      />
-      <input
-        type="number"
-        name="quantity"
-        min="0"
-        value={quantity}
-        onChange={(e) => setQuantity(parseInt(e.target.value))}
-      />
+  const getInputComp = (
+    name: string,
+    type: string,
+    value: any,
+    onChange: (e: any) => void,
+    readOnly: boolean
+  ) => {
+    return (
+      <div>
+        <label htmlFor={name}>{name}</label>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          readOnly={readOnly}
+        />
+      </div>
+    );
+  };
 
-      <input type="submit" value="Apply" />
+  const fillForm = (itemQuickViewData: ItemQuickViewData) => (
+    // Elad: Add form validation
+    <form
+      onSubmit={updateUser}
+      style={{ display: "flex", flexDirection: "column" }}
+    >
+      {!itemQuickViewData.item && (
+        <>
+          {getInputComp(
+            "url",
+            "text",
+            url,
+            (e) => setUrl(e.target.value),
+            false
+          )}
+          {getInputComp(
+            "image",
+            "text",
+            imgUrl,
+            (e) => setImgUrl(e.target.value),
+            false
+          )}
+        </>
+      )}
+
+      {getInputComp(
+        "name",
+        "text",
+        itemName,
+        (e) => setItemName(e.target.value),
+        itemQuickViewData.item !== null
+      )}
+
+      {getInputComp(
+        "price",
+        "number",
+        price,
+        (e) => setPrice(parseInt(e.target.value)),
+        itemQuickViewData.item !== null
+      )}
+
+      {getInputComp(
+        "wanted price",
+        "number",
+        wantedPrice,
+        (e) => setWantedPrice(parseInt(e.target.value)),
+        itemQuickViewData.item !== null
+      )}
+
+      {getInputComp(
+        "group size goal",
+        "number",
+        groupSizeGoal,
+        (e) => setGroupSizeGoal(parseInt(e.target.value)),
+        itemQuickViewData.item !== null
+      )}
+
+      {getInputComp(
+        "account address",
+        "text",
+        itemQuickViewData.accountAddress,
+        (e) => {},
+        true
+      )}
+
+      <div>
+        <label htmlFor="email-address">Email</label>
+        <input
+          type="email"
+          name="email-address"
+          pattern=".+@[a-z0-9]+\.[a-z]{2,3}"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          readOnly={itemQuickViewData.usersItemDetails !== null}
+        />
+      </div>
+
+      {getInputComp(
+        "delivery address",
+        "text",
+        deliveryAddress,
+        (e) => setDeliveryAddress(e.target.value),
+        itemQuickViewData.usersItemDetails !== null
+      )}
+      <div>
+        <label htmlFor="quantity">Quantity</label>
+        <input
+          type="number"
+          name="quantity"
+          min="0"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value))}
+        />
+      </div>
+
+      <input
+        type="submit"
+        value="Apply"
+        style={{ width: "10%", marginLeft: "45%", marginTop: "5%" }}
+      />
     </form>
   );
 
@@ -123,38 +247,8 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         <button type="button" className="close" onClick={() => closeModal()}>
           &times;
         </button>
-        <div>
-          <p>{itemQuickViewData.item!.name}</p>
-          <div>
-            <p>Price: {itemQuickViewData.item!.price}$</p>
-            <p>Wanted price: {itemQuickViewData.item!.wantedPrice}$</p>
-          </div>
-          <div>
-            <p>Group size goal: {itemQuickViewData.item!.groupSizeGoal}</p>
-          </div>
-        </div>
-        {userForm(itemQuickViewData)}
+        {fillForm(itemQuickViewData)}
       </div>
     </div>
   );
 };
-
-// The account address (automatically filled)
-// Email address
-// Delivery address
-// Quantity (Will check if the is user already registered for this porduct)
-// The product's name
-
-// '{"update_item": {
-//   "link": "https://blabla.com?bla&bla1",
-//   "img": "https://blabla.com?bla&bla1&img1"
-//   "price": "1000",
-//   "wanted_price": "800",
-//   "group_size_goal": "10",
-//   "user_details": {
-//     "account_address": "sdkjhas",
-//     "email": "bla@bla.com", // A good idea to be able to change, not for this POC
-//     "delivery_address": "bla st, bla apt, bla  bla", // A good idea to be able to change, not for this POC
-//     ?"quantity": "2"
-//   }
-// }}'

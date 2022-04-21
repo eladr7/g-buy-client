@@ -8,6 +8,7 @@ import {
 } from "../consts";
 import { SecretjsContext } from "./SecretjsContext";
 import {
+  addItemToServer,
   getItemsFromServer,
   removeItemFromServer,
   updateItemInServer,
@@ -40,7 +41,7 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
   const asyncDispatch = async (action: StoreAction) => {
     let succeded: boolean = false;
     const {
-      data: { category, url, userUpdateData },
+      data: { category, url, userUpdateData, item },
     } = action;
 
     switch (action.type) {
@@ -56,7 +57,19 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
         break;
 
       case STORE_ACTIONS.APPEND_ITEM:
-        break;
+        succeded = await addItemToServer(category, item!, secretjs!);
+        if (succeded) {
+          dispatch({
+            type: STORE_ACTIONS.APPEND_ITEM,
+            data: {
+              category,
+              item,
+            },
+          });
+          return;
+        }
+        alert("Item update failed");
+        throw new TypeError("Item update failed");
 
       case STORE_ACTIONS.UPDATE_ITEM:
         // Elad: Consider just getting the items and perform all the calculations

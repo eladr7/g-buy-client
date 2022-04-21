@@ -1,10 +1,16 @@
 import { fromUtf8, SecretNetworkClient } from "secretjs";
-import { ItemData, ItemUserDetails } from "../consts";
+import { ItemData, UserItemDetails } from "../consts";
 
 type FetchedItems = {
   fetched_items: {
     items: ItemData[];
     status: string;
+  };
+};
+
+type AddItemResult = {
+  add_item: {
+    status: boolean;
   };
 };
 
@@ -30,7 +36,7 @@ const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 const CHAIN_ID = "secret-4";
 
 export const getItemsFromServer = async (category: string, secretjs: any) => {
-  let userDetails: ItemUserDetails = {
+  let userDetails: UserItemDetails = {
     accountAddress: secretjs.address,
     email: "bla@bla.com",
     deliveryAddress: "bla st, bla apt, bla  bla",
@@ -45,8 +51,8 @@ export const getItemsFromServer = async (category: string, secretjs: any) => {
     groupSizeGoal: 10,
     currentGroupSize: 1,
     url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
-    imgLink: "https://i.ebayimg.com/images/g/EecAAOSwbBphibLC/s-l225.webp",
-    creatoreAddress: secretjs.address,
+    imgUrl: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
+    creatorAddress: secretjs.address,
     usersDetails,
   };
 
@@ -70,10 +76,41 @@ export const getItemsFromServer = async (category: string, secretjs: any) => {
   return items;
 };
 
+export const addItemToServer = async (
+  category: string,
+  itme: ItemData,
+  secretjs: any
+) => {
+  return true;
+  const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
+  const result = await secretjs.tx.compute.executeContract(
+    {
+      sender: secretjs.address,
+      contractAddress: CONTRACT_ADDRESS,
+      codeHash: contractHash, // optional but way faster
+      msg: {
+        add_item: {
+          ...itme,
+        },
+      },
+      sentFunds: [], // optional
+    },
+    {
+      gasLimit: 100_000,
+    }
+  );
+
+  const {
+    add_item: { status },
+  } = JSON.parse(fromUtf8(result.data[0])) as AddItemResult;
+
+  return status;
+};
+
 export const updateItemInServer = async (
   category: string,
   url: string,
-  userUpdateData: ItemUserDetails,
+  userUpdateData: UserItemDetails,
   secretjs: any
 ) => {
   return true;

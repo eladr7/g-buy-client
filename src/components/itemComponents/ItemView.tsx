@@ -3,7 +3,7 @@ import {
   AsyncDispatchFunc,
   ItemData,
   ItemQuickViewData,
-  ItemUserDetails,
+  UserItemDetails,
   STORE_ACTIONS,
 } from "../consts";
 import { SecretjsContext } from "../context/SecretjsContext";
@@ -24,9 +24,9 @@ export const ItemView: React.FC<ItemViewProps> = ({
   const { secretjs } = useContext(SecretjsContext);
 
   const getUserDetailsForItem = (accountAddress: string, item: ItemData) => {
-    let usersItemDetails: ItemUserDetails[];
+    let usersItemDetails: UserItemDetails[];
     usersItemDetails = item.usersDetails.filter(
-      (userDetails: ItemUserDetails) =>
+      (userDetails: UserItemDetails) =>
         userDetails.accountAddress === accountAddress
     );
     if (usersItemDetails.length > 0) {
@@ -62,7 +62,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   const removeButton = (): React.ReactNode => {
     return (
-      item.creatoreAddress === secretjs?.address && (
+      item.creatorAddress === secretjs?.address && (
         <button
           onClick={() =>
             asyncDispatch({
@@ -101,9 +101,15 @@ export const ItemView: React.FC<ItemViewProps> = ({
         <p>Current group size: {item.currentGroupSize}</p>
         <p>Group size goal: {item.groupSizeGoal}</p>
       </div>
-      <div>
-        <p>URL: {item.url}</p>
-        <img src={item.imgLink} alt="" />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <a href={item.url}>URL</a>
+        <img src={item.imgUrl} alt="" />
       </div>
       <div className="object">
         {removeButton()}

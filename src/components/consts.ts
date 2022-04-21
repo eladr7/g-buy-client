@@ -5,7 +5,7 @@ export const Categories = [
     "Mouse pads",
 ];
 
-export type ItemUserDetails = {
+export type UserItemDetails = {
   accountAddress: string;
   email: string;
   deliveryAddress: string;
@@ -16,19 +16,19 @@ export type ItemData = {
   name: string;
   category: string;
   url: string;
-  imgLink: string;
-  creatoreAddress: string;
+  imgUrl: string;
+  creatorAddress: string;
   price: number;
   wantedPrice: number;
   groupSizeGoal: number;
-  currentGroupSize: number;
-  usersDetails: ItemUserDetails[];
+  currentGroupSize?: number;
+  usersDetails: UserItemDetails[];
 };
 
 export type ItemQuickViewData = {
-  item: ItemData,
+  item: ItemData | null,
   accountAddress: string,
-  usersItemDetails: ItemUserDetails | null
+  usersItemDetails: UserItemDetails | null
 }
 
 export type CategoryStore = {
@@ -52,7 +52,7 @@ export type StoreActionData = {
   item?: ItemData;
   items?: ItemData[];
   url?: string;
-  userUpdateData?: ItemUserDetails;
+  userUpdateData?: UserItemDetails;
 }
 
 export type StoreAction = {

@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ItemData, ItemQuickViewData, STORE_ACTIONS } from "./consts";
+import { ItemQuickViewData, STORE_ACTIONS } from "./consts";
 import { StoresContext } from "./context/StoresContextProvider";
 import ItemsViewLoader from "./itemComponents/ItemsViewLoader";
 import { ItemQuickView } from "./itemComponents/ItemQuickView";
+import { SecretjsContext } from "./context/SecretjsContext";
 
 interface ItemsGalleryProps {
   category: string;
 }
 
 export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
+  const { secretjs } = useContext(SecretjsContext);
+
   const { stores, asyncDispatch } = useContext(StoresContext);
 
   const [itemQuickView, setItemQuickView] = useState<ItemQuickViewData>();
@@ -26,25 +29,13 @@ export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
   }, []);
 
   const addItem = () => {
-    let name = prompt("Enter the item's name (as it appears in the site)");
-    let url = prompt("Enter the item's URL");
-    if (url === "" || name === "" || url === null || name === null) {
-      return;
-    }
-    // Elad Check quantity is larger than 0!
-    // asyncDispatch({
-    //   type: STORE_ACTIONS.APPEND_ITEM,
-    //   data: {
-    //     category,
-    //     item: {
-    //       productName: "string",
-    //       currentPrice: 12,
-    //       wantedPrice: 12,
-    //       groupSizeGoal: 12,
-    //       id: 12,
-    //     }
-    //   }
-    // });
+    let itemQuickViewData: ItemQuickViewData = {
+      item: null,
+      accountAddress: secretjs!.address,
+      usersItemDetails: null,
+    };
+    setModalActive(true);
+    setItemQuickView(itemQuickViewData);
   };
 
   const openModal = (itemQuickViewData: ItemQuickViewData) => {
