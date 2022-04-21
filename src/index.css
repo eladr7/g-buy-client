@@ -33,9 +33,10 @@ code {
   background: rgba(248, 248, 248, 0.815);
   position: fixed;
   top: 0;
+  right: 0%;
   z-index: 100;
   height: 100%;
-  width: 100%;
+  width: 50%;
   padding-right: 0.5%;
   overflow-y: hidden;
   
@@ -50,46 +51,25 @@ code {
   -webkit-justify-content: center;
 }
 
-/* .modal {
+.modal {
   width: 100%;
   height: 100%;
   max-width: 98%;
   max-height: 88%;
   margin: 1%;
-  background: rgba(232, 234, 235, 0.89);
+  background: rgba(19, 41, 52, 0.89);
   border-radius: 4px;
   position: relative;
-  .close {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    font-size: 24px;
-    line-height: 36px;
-    border-radius: 0 4px 0 0;
-    background: transparent;
-    color: $gray-medium;
-    cursor: pointer;
-    &:hover {
-      background: $gray-dark-bg;
-    }
-  }
-  .object-name {
-    // background: $gray-medium-bg;
-    border-radius: 0 0 4px 4px;
-    position: relative;
-    padding: 0;
-    margin-bottom: 2px;
-  }
-  iframe {
-    width: 100%;
-    max-width: 2500px;
-    margin: 0 auto;
-    position: absolute;
-    width: 100%;
-    height: 93%;
-    top: 0;
-    left: 0;
-    margin-top: 3.3%;
-    // z-index: -1;
-  }
-} */
+}
+
+.modal.close {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 24px;
+  line-height: 36px;
+  border-radius: 0 4px 0 0;
+  background: transparent;
+  color: gray;
+  cursor: pointer;
+}

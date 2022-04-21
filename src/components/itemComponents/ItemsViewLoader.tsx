@@ -2,7 +2,12 @@ import React from "react";
 
 import { ItemView } from "./ItemView";
 import NoResults from "./NoResults";
-import { AsyncDispatchFunc, CategoryStore, ItemData } from "../consts";
+import {
+  AsyncDispatchFunc,
+  CategoryStore,
+  ItemData,
+  ItemQuickViewData,
+} from "../consts";
 
 const ItemsViewLoader = {
   // @private
@@ -11,9 +16,8 @@ const ItemsViewLoader = {
   // objects is empty.
   getItemsView(
     items: ItemData[],
-    openModalFunction: (item: ItemData) => void,
-    asyncDispatch: AsyncDispatchFunc,
-    category: string
+    openModalFunction: (itemQuickViewData: ItemQuickViewData) => void,
+    asyncDispatch: AsyncDispatchFunc
   ) {
     if (items.length <= 0) {
       return <NoResults />;
@@ -27,7 +31,6 @@ const ItemsViewLoader = {
             item={item}
             openModal={openModalFunction}
             asyncDispatch={asyncDispatch}
-            category={category}
           />
         ))}
       </div>
@@ -39,9 +42,7 @@ const ItemsViewLoader = {
     if (searchPhrase) {
       const searchingFor = (searchPhrase: string) => {
         return function (item: ItemData) {
-          return item.productName
-            .toLowerCase()
-            .includes(searchPhrase.toLowerCase());
+          return item.name.toLowerCase().includes(searchPhrase.toLowerCase());
         };
       };
       return categoryStore.items.filter(searchingFor(searchPhrase));
@@ -56,17 +57,15 @@ const ItemsViewLoader = {
   getFilteredItemsView(
     categoryStore: CategoryStore,
     searchPhrase: string,
-    openModalFunction: (item: ItemData) => void,
-    asyncDispatch: AsyncDispatchFunc,
-    category: string
+    openModalFunction: (itemQuickViewData: ItemQuickViewData) => void,
+    asyncDispatch: AsyncDispatchFunc
   ) {
     const filterredItems = this.filterItems(categoryStore, searchPhrase);
 
     const objectsViews = this.getItemsView(
       filterredItems,
       openModalFunction,
-      asyncDispatch,
-      category
+      asyncDispatch
     );
     return objectsViews;
   },

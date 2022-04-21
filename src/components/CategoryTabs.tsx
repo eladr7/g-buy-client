@@ -19,6 +19,8 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({}) => {
     );
   }
 
+  // Elad: Separate for 4 different stores - to prevent re-rendering
+  // the entire array on a store update
   return (
     <div style={{ width: "100%" }}>
       <StoresContextProvider>

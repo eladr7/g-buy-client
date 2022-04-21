@@ -7,7 +7,11 @@ import {
   STORE_ACTIONS,
 } from "../consts";
 import { SecretjsContext } from "./SecretjsContext";
-import { getItemsFromServer } from "./ServerAPIFunctions";
+import {
+  getItemsFromServer,
+  removeItemFromServer,
+  updateItemInServer,
+} from "./ServerAPIFunctions";
 import { StoresReducer } from "./StoresReducer";
 
 interface IContextProps {
@@ -34,28 +38,65 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
   });
 
   const asyncDispatch = async (action: StoreAction) => {
+    let succeded: boolean = false;
+    const {
+      data: { category, url, userUpdateData },
+    } = action;
+
     switch (action.type) {
       case STORE_ACTIONS.LOAD_ITEMS:
-        let items = await getItemsFromServer(action.data.category, secretjs!);
+        let items = await getItemsFromServer(category, secretjs!);
         dispatch({
           type: STORE_ACTIONS.LOAD_ITEMS,
           data: {
-            category: action.data.category,
+            category: category,
             items,
           },
         });
         break;
+
       case STORE_ACTIONS.APPEND_ITEM:
         break;
+
+      case STORE_ACTIONS.UPDATE_ITEM:
+        // Elad: Consider just getting the items and perform all the calculations
+        // on the server side
+        succeded = await updateItemInServer(
+          category,
+          url!,
+          userUpdateData!,
+          secretjs!
+        );
+        if (succeded) {
+          dispatch({
+            type: STORE_ACTIONS.UPDATE_ITEM,
+            data: {
+              category,
+              url,
+              userUpdateData,
+            },
+          });
+          return;
+        }
+        alert("Item update failed");
+        throw new TypeError("Item update failed");
+
       case STORE_ACTIONS.REMOVE_ITEM:
-        dispatch({
-          type: STORE_ACTIONS.REMOVE_ITEM,
-          data: {
-            category: action.data.category,
-            id: action.data.item!.id,
-          },
-        });
-        break;
+        succeded = await removeItemFromServer(category, url!, secretjs!);
+
+        if (succeded) {
+          dispatch({
+            type: STORE_ACTIONS.REMOVE_ITEM,
+            data: {
+              category,
+              url,
+            },
+          });
+          return;
+        }
+        alert("Item removal failed");
+        throw new TypeError("Item removal failed");
+
       default:
         throw new TypeError("No such action");
     }
