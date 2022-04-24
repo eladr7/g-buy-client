@@ -1,17 +1,16 @@
 import { url } from "inspector";
-import { STORE_ACTIONS, ItemData, CategoriesStore, StoreAction, UserItemDetails } from "../consts";
+import { STORE_ACTIONS, ItemData, StoreAction, UserItemDetails, CategoryStore } from "../consts";
 
 
-export const StoresReducer = (state: CategoriesStore, action: StoreAction) => {
+export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
   let category = action.data.category;
-  let categoryItems = state[category].items;
   switch (action.type) {
     case STORE_ACTIONS.LOAD_ITEMS:
-      if (state[category] && state[category].loaded === true) {
+      if (state.loaded === true) {
         return state;
       }
-      state[action.data.category].items = action.data.items!;
-      state[category].loaded = true;
+      state.items = action.data.items!;
+      state.loaded = true;
       return {...state};
     // return [
     //   ...state,
@@ -21,7 +20,7 @@ export const StoresReducer = (state: CategoriesStore, action: StoreAction) => {
     //   },
     // ];
     case STORE_ACTIONS.APPEND_ITEM:
-      state[category].items.push(action.data.item!)
+      state.items.push(action.data.item!)
       // Elad: add the logic to insert into the DB
       // Elad: Check quantity is larger than 0!
       return {...state};
@@ -39,41 +38,38 @@ export const StoresReducer = (state: CategoriesStore, action: StoreAction) => {
           userUpdateData
         }
       } = action
-      let itemIndex = categoryItems.findIndex((item: ItemData) => item.url === action.data.url)
+      let itemIndex = state.items.findIndex((item: ItemData) => item.url === action.data.url)
       if (itemIndex === -1) {
         return state
       }
-      let itemToUpdate: ItemData = categoryItems[itemIndex];
+      let itemToUpdate: ItemData = state.items[itemIndex];
       
       // Get the index of the old user details, if exists
       let userDetailsIndex: number = itemToUpdate.usersDetails.findIndex((userDetails: UserItemDetails) => userDetails.accountAddress === userUpdateData!.accountAddress)
     
       // If new user: push them to usersDetails and update currentGroupSize
       if (userDetailsIndex === -1) {
-        state[category].items[itemIndex].groupSizeGoal += userUpdateData!.quantity;
-        state[category].items[itemIndex].usersDetails.push(userUpdateData!)
-        // itemToUpdate.groupSizeGoal += userUpdateData!.quantity;
-        // itemToUpdate.usersDetails.push(userUpdateData!)
+        state.items[itemIndex].groupSizeGoal += userUpdateData!.quantity;
+        state.items[itemIndex].usersDetails.push(userUpdateData!)
         return {...state}
       }
 
       // It's an existing user
-      let oldUserDetails: UserItemDetails = categoryItems[itemIndex].usersDetails[userDetailsIndex];         
+      let oldUserDetails: UserItemDetails = state.items[itemIndex].usersDetails[userDetailsIndex];         
       let diffQuantity: number = userUpdateData!.quantity - oldUserDetails.quantity;
-      state[category].items[itemIndex].currentGroupSize! += diffQuantity;
-      state[category].items[itemIndex].usersDetails[userDetailsIndex].quantity = userUpdateData!.quantity;
+      state.items[itemIndex].currentGroupSize! += diffQuantity;
+      state.items[itemIndex].usersDetails[userDetailsIndex].quantity = userUpdateData!.quantity;
 
       // If this was the only user - remove the item itself!
       if (itemToUpdate.currentGroupSize === 0) {
-        state[category].items.splice(itemIndex, 1);
+        state.items.splice(itemIndex, 1);
         return {...state}
       }
 
       // If the user updated their quantity to zero - remove them.
       if (userUpdateData!.quantity === 0) {
         let index: number = itemToUpdate.usersDetails.findIndex((userDetails: UserItemDetails) => userDetails.accountAddress === userUpdateData!.accountAddress)
-        state[category].items[itemIndex].usersDetails.splice(index, 1);
-        // itemToUpdate.usersDetails.splice(index, 1);
+        state.items[itemIndex].usersDetails.splice(index, 1);
         return {...state}
       }
 
@@ -81,7 +77,7 @@ export const StoresReducer = (state: CategoriesStore, action: StoreAction) => {
       return {...state}
 
     case STORE_ACTIONS.REMOVE_ITEM:
-      state[category].items = categoryItems.filter(
+      state.items = state.items.filter(
         (item: ItemData) => item.url !== action.data.url
       )
       // Elad: add the logic to remove from the DB

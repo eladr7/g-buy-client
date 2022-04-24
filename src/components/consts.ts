@@ -36,10 +36,6 @@ export type CategoryStore = {
   loaded: boolean
 }
 
-export type CategoriesStore = {
-  [items: string]: CategoryStore;
-}
-
 export const STORE_ACTIONS = {
   LOAD_ITEMS: "LOAD_ITEMS",
   APPEND_ITEM: "APPEND_ITEM",
@@ -61,5 +57,5 @@ export type StoreAction = {
 }
 
 export type DispatchFunc =  ({ type, data }: StoreAction) => void;
-export type AsyncDispatchFunc = (action: StoreAction) => void;
+export type AsyncDispatchFunc = (action: StoreAction) => Promise<void>;
 

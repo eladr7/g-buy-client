@@ -22,7 +22,6 @@ export const ItemView: React.FC<ItemViewProps> = ({
   asyncDispatch,
 }) => {
   const { secretjs } = useContext(SecretjsContext);
-
   const getUserDetailsForItem = (accountAddress: string, item: ItemData) => {
     let usersItemDetails: UserItemDetails[];
     usersItemDetails = item.usersDetails.filter(
@@ -53,7 +52,9 @@ export const ItemView: React.FC<ItemViewProps> = ({
     ) : (
       <button
         className="open-modal-btn"
-        onClick={() => openModal({ item, accountAddress, usersItemDetails })}
+        onClick={() =>
+          openModal({ item, accountAddress, usersItemDetails: null })
+        }
       >
         Join
       </button>

@@ -22,10 +22,7 @@ interface IContextProps {
 
 export const SecretjsContext = createContext({} as IContextProps);
 
-interface SecretjsContextProps {}
-export const SecretjsContextProvider: React.FC<SecretjsContextProps> = (
-  props
-) => {
+export const SecretjsContextProvider: React.FC<any> = (props) => {
   const [secretjs, setSecretjs] = useState<SecretNetworkClient>();
   const [keplrReady, setKeplrReady] = useState<boolean>(false);
 
@@ -66,7 +63,6 @@ export const SecretjsContextProvider: React.FC<SecretjsContextProps> = (
       await setupKeplr();
     })();
   }, []);
-
   return (
     <SecretjsContext.Provider value={{ secretjs, keplrReady }}>
       {props.children}

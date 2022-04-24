@@ -104,6 +104,7 @@ export const addItemToServer = async (
     add_item: { status },
   } = JSON.parse(fromUtf8(result.data[0])) as AddItemResult;
 
+  // Elad: Charge the user!
   return status;
 };
 
@@ -138,6 +139,7 @@ export const updateItemInServer = async (
     update_item: { status },
   } = JSON.parse(fromUtf8(result.data[0])) as UpdateItemResult;
 
+  // Elad: Charge/refund the user!
   return status;
 };
 
@@ -170,5 +172,6 @@ export const removeItemFromServer = async (
     remove_item: { status },
   } = JSON.parse(fromUtf8(result.data[0])) as RemoveItemResult;
 
+  // Elad: Charge/refund the user!
   return status;
 };

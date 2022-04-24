@@ -1,44 +1,7 @@
-import React, { createContext, useContext, useReducer } from "react";
-import {
-  AsyncDispatchFunc,
-  Categories,
-  CategoriesStore,
-  StoreAction,
-  STORE_ACTIONS,
-} from "../consts";
-import { SecretjsContext } from "./SecretjsContext";
-import {
-  addItemToServer,
-  getItemsFromServer,
-  removeItemFromServer,
-  updateItemInServer,
-} from "./ServerAPIFunctions";
-import { StoresReducer } from "./StoresReducer";
+import { CategoryStore, StoreAction, STORE_ACTIONS } from "../consts";
+import { addItemToServer, getItemsFromServer, removeItemFromServer, updateItemInServer } from "./ServerAPIFunctions";
 
-interface IContextProps {
-  stores: CategoriesStore;
-  asyncDispatch: AsyncDispatchFunc;
-}
-export const StoresContext = createContext({} as IContextProps);
-
-interface StoresContextProviderProps {}
-export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
-  props
-) => {
-  const { secretjs } = useContext(SecretjsContext);
-
-  const [stores, dispatch] = useReducer(StoresReducer, {}, () => {
-    let storesInit: CategoriesStore = {};
-    Categories.map((category: string) => {
-      storesInit[category] = {
-        items: [],
-        loaded: false,
-      };
-    });
-    return storesInit;
-  });
-
-  const asyncDispatch = async (action: StoreAction) => {
+export const asyncDispatchFunc = (store: CategoryStore, secretjs: any, dispatch: any) =>  async (action: StoreAction) => {
     let succeded: boolean = false;
     const {
       data: { category, url, userUpdateData, item },
@@ -46,6 +9,9 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
 
     switch (action.type) {
       case STORE_ACTIONS.LOAD_ITEMS:
+        if (store.loaded === true) {
+          return;
+        }
         let items = await getItemsFromServer(category, secretjs!);
         dispatch({
           type: STORE_ACTIONS.LOAD_ITEMS,
@@ -74,6 +40,7 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
       case STORE_ACTIONS.UPDATE_ITEM:
         // Elad: Consider just getting the items and perform all the calculations
         // on the server side
+        // Elad: Check in the client if to remove - and send remove instead of update.
         succeded = await updateItemInServer(
           category,
           url!,
@@ -114,10 +81,3 @@ export const StoresContextProvider: React.FC<StoresContextProviderProps> = (
         throw new TypeError("No such action");
     }
   };
-
-  return (
-    <StoresContext.Provider value={{ stores, asyncDispatch }}>
-      {props.children}
-    </StoresContext.Provider>
-  );
-};

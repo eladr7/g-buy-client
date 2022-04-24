@@ -6,7 +6,7 @@ import {
   UserItemDetails,
   STORE_ACTIONS,
 } from "../consts";
-import { StoresContext } from "../context/StoresContextProvider";
+import { StoreContext } from "../context/StoreContextProvider";
 
 interface ItemQuickViewProps {
   itemQuickViewData: ItemQuickViewData | undefined;
@@ -33,9 +33,11 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   const [email, setEmail] = useState<string>();
   const [deliveryAddress, setDeliveryAddress] = useState<string>("");
 
-  const { asyncDispatch } = useContext(StoresContext);
+  const { asyncDispatch } = useContext(StoreContext);
 
   useEffect(() => {
+    // If opened via clicking an existing item (As opposed to adding a new item), set the items'
+    // details
     if (itemQuickViewData?.item) {
       setItemName(itemQuickViewData.item.name);
       setPrice(itemQuickViewData.item.price);
@@ -43,6 +45,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       setGroupSizeGoal(itemQuickViewData.item.groupSizeGoal);
     }
 
+    // If the user who clicked the item already participates in it, fill their details.
     if (itemQuickViewData?.usersItemDetails) {
       setQuantity(itemQuickViewData.usersItemDetails.quantity);
       setEmail(itemQuickViewData.usersItemDetails.email);
@@ -52,8 +55,23 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     document.addEventListener("click", handleClickOutside, true);
     return () => {
       document.removeEventListener("click", handleClickOutside, true);
+
+      // Since thie component is only rendered once when entering a tab,
+      // each time openModal changes, reset all the values.
+      // Notice that openModal signifies whether or not this component is visible.
+      setUrl("");
+      setImgUrl("");
+      setItemName("");
+
+      setPrice(0);
+      setWantedPrice(0);
+      setGroupSizeGoal(0);
+      setQuantity(0);
+
+      setEmail("");
+      setDeliveryAddress("");
     };
-  }, []);
+  }, [openModal]);
 
   const handleClickOutside = (event: any) => {
     var node = document.getElementById("node");
@@ -63,7 +81,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     }
   };
 
-  const updateUser = () => {
+  const updateItem = () => {
     let userUpdateData: UserItemDetails = {
       accountAddress: itemQuickViewData!.accountAddress,
       deliveryAddress: deliveryAddress!,
@@ -71,6 +89,8 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       quantity: quantity!,
     };
 
+    // If the item doesn't already exist, add it
+    // Elad: Change the logic to - only seller adds a product
     if (!itemQuickViewData?.item) {
       // Add a new item!
 
@@ -86,6 +106,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         // currentGroupSize: 0,
         usersDetails: [userUpdateData],
       };
+      // Elad: Add creation_code! (on adding/removing item)
       asyncDispatch({
         type: STORE_ACTIONS.APPEND_ITEM,
         data: {
@@ -112,7 +133,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     });
   };
 
-  const getInputComp = (
+  const input = (
     name: string,
     type: string,
     value: any,
@@ -134,21 +155,15 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   };
 
   const fillForm = (itemQuickViewData: ItemQuickViewData) => (
-    // Elad: Add form validation
     <form
-      onSubmit={updateUser}
+      onSubmit={updateItem}
       style={{ display: "flex", flexDirection: "column" }}
     >
+      {/* If the item doesn't exist, add inputs for its url and image */}
       {!itemQuickViewData.item && (
         <>
-          {getInputComp(
-            "url",
-            "text",
-            url,
-            (e) => setUrl(e.target.value),
-            false
-          )}
-          {getInputComp(
+          {input("url", "text", url, (e) => setUrl(e.target.value), false)}
+          {input(
             "image",
             "text",
             imgUrl,
@@ -158,44 +173,44 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         </>
       )}
 
-      {getInputComp(
+      {input(
         "name",
         "text",
         itemName,
         (e) => setItemName(e.target.value),
-        itemQuickViewData.item !== null
+        itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 
-      {getInputComp(
+      {input(
         "price",
         "number",
         price,
         (e) => setPrice(parseInt(e.target.value)),
-        itemQuickViewData.item !== null
+        itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 
-      {getInputComp(
+      {input(
         "wanted price",
         "number",
         wantedPrice,
         (e) => setWantedPrice(parseInt(e.target.value)),
-        itemQuickViewData.item !== null
+        itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 
-      {getInputComp(
+      {input(
         "group size goal",
         "number",
         groupSizeGoal,
         (e) => setGroupSizeGoal(parseInt(e.target.value)),
-        itemQuickViewData.item !== null
+        itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 
-      {getInputComp(
+      {input(
         "account address",
         "text",
         itemQuickViewData.accountAddress,
         (e) => {},
-        true
+        true // The account address is always immutable as it's taken from the wallet
       )}
 
       <div>
@@ -207,27 +222,39 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          // usersItemDetails not null means the user that clicked this item also already
+          // participates in it, so they shouldn't be able to edit this field
           readOnly={itemQuickViewData.usersItemDetails !== null}
         />
       </div>
 
-      {getInputComp(
-        "delivery address",
-        "text",
-        deliveryAddress,
-        (e) => setDeliveryAddress(e.target.value),
-        itemQuickViewData.usersItemDetails !== null
+      {/* Delivery address input should only be presented if the item is not currently added by the
+       seller */}
+      {itemQuickViewData.item !== null &&
+        input(
+          "delivery address",
+          "text",
+          deliveryAddress,
+          (e) => setDeliveryAddress(e.target.value),
+          // usersItemDetails not null means the user that clicked this item also already
+          // participates in it, so they shouldn't be able to edit this field
+          itemQuickViewData.usersItemDetails !== null
+        )}
+
+      {/* Quantity input should only be presented if the item is not currently added by the
+       seller */}
+      {itemQuickViewData.item !== null && (
+        <div>
+          <label htmlFor="quantity">Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            min="0"
+            value={quantity}
+            onChange={(e) => setQuantity(parseInt(e.target.value))}
+          />
+        </div>
       )}
-      <div>
-        <label htmlFor="quantity">Quantity</label>
-        <input
-          type="number"
-          name="quantity"
-          min="0"
-          value={quantity}
-          onChange={(e) => setQuantity(parseInt(e.target.value))}
-        />
-      </div>
 
       <input
         type="submit"

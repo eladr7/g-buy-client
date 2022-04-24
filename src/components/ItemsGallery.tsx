@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ItemQuickViewData, STORE_ACTIONS } from "./consts";
-import { StoresContext } from "./context/StoresContextProvider";
+import { StoreContext } from "./context/StoreContextProvider";
 import ItemsViewLoader from "./itemComponents/ItemsViewLoader";
 import { ItemQuickView } from "./itemComponents/ItemQuickView";
 import { SecretjsContext } from "./context/SecretjsContext";
@@ -11,14 +11,12 @@ interface ItemsGalleryProps {
 
 export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
   const { secretjs } = useContext(SecretjsContext);
-
-  const { stores, asyncDispatch } = useContext(StoresContext);
+  const { store, asyncDispatch } = useContext(StoreContext);
 
   const [itemQuickView, setItemQuickView] = useState<ItemQuickViewData>();
   const [modalActive, setModalActive] = useState<boolean>(false);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-
   useEffect(() => {
     asyncDispatch({
       type: STORE_ACTIONS.LOAD_ITEMS,
@@ -48,7 +46,7 @@ export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
   };
 
   let itemsView = ItemsViewLoader.getFilteredItemsView(
-    stores[category],
+    store,
     searchPhrase,
     openModal,
     asyncDispatch

@@ -3,14 +3,13 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { Categories } from "./consts";
 import { ItemsGallery } from "./ItemsGallery";
 import "react-tabs/style/react-tabs.css";
-import { StoresContextProvider } from "./context/StoresContextProvider";
+import { StoreContextProvider } from "./context/StoreContextProvider";
 import { SecretjsContext } from "./context/SecretjsContext";
 
 interface CategoryTabsProps {}
 
 export const CategoryTabs: React.FC<CategoryTabsProps> = ({}) => {
   const { keplrReady } = useContext(SecretjsContext);
-
   if (!keplrReady) {
     return (
       <>
@@ -23,28 +22,27 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({}) => {
   // the entire array on a store update
   return (
     <div style={{ width: "100%" }}>
-      <StoresContextProvider>
-        <Tabs>
-          <TabList
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-            }}
-          >
-            {Categories.map((category: string) => (
-              <Tab>{category}</Tab>
-            ))}
-          </TabList>
-
+      <Tabs>
+        <TabList
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+          }}
+        >
           {Categories.map((category: string) => (
-            <TabPanel>
-              <h2>Join a {category.toLowerCase()} purchasing group</h2>
-              <ItemsGallery category={category} />
-            </TabPanel>
+            <Tab>{category}</Tab>
           ))}
-        </Tabs>
-      </StoresContextProvider>
+        </TabList>
+        {Categories.map((category: string) => (
+          <TabPanel>
+            <h2>Join a {category.toLowerCase()} purchasing group</h2>
+            <StoreContextProvider>
+              <ItemsGallery category={category} />
+            </StoreContextProvider>
+          </TabPanel>
+        ))}
+      </Tabs>
     </div>
   );
 };
