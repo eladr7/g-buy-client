@@ -30,7 +30,7 @@ export const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category }) => {
     let itemQuickViewData: ItemQuickViewData = {
       item: null,
       accountAddress: secretjs!.address,
-      usersItemDetails: null,
+      userItemDetails: null,
     };
     setModalActive(true);
     setItemQuickView(itemQuickViewData);

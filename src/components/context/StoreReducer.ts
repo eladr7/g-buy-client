@@ -1,5 +1,5 @@
 import { url } from "inspector";
-import { STORE_ACTIONS, ItemData, StoreAction, UserItemDetails, CategoryStore } from "../consts";
+import { STORE_ACTIONS, ItemData, StoreAction, UserItemDetails, CategoryStore, UserItem } from "../consts";
 
 
 export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
@@ -38,44 +38,49 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
           userUpdateData
         }
       } = action
+
+      // For updating the item's view 
       let itemIndex = state.items.findIndex((item: ItemData) => item.url === action.data.url)
       if (itemIndex === -1) {
         return state
       }
-      let itemToUpdate: ItemData = state.items[itemIndex];
-      
-      // Get the index of the old user details, if exists
-      let userDetailsIndex: number = itemToUpdate.usersDetails.findIndex((userDetails: UserItemDetails) => userDetails.accountAddress === userUpdateData!.accountAddress)
-    
-      // If new user: push them to usersDetails and update currentGroupSize
-      if (userDetailsIndex === -1) {
-        state.items[itemIndex].groupSizeGoal += userUpdateData!.quantity;
-        state.items[itemIndex].usersDetails.push(userUpdateData!)
+
+      // For updating the user count for this item
+      let userItemIndex = state.userItems.findIndex((userItem: UserItem) => userItem.url === action.data.url)
+
+      if (userItemIndex === -1) {
+        // New user
+
+        if (userUpdateData!.quantity === 0) {
+          // Elad - enforce this in the form itself
+          alert("Cannot participate with 0 items")
+          return state;
+        }
+
+        state.userItems.push({url: action.data.url!, quantity: userUpdateData!.quantity})
+        state.items[itemIndex].currentGroupSize! += userUpdateData!.quantity
         return {...state}
       }
 
-      // It's an existing user
-      let oldUserDetails: UserItemDetails = state.items[itemIndex].usersDetails[userDetailsIndex];         
-      let diffQuantity: number = userUpdateData!.quantity - oldUserDetails.quantity;
-      state.items[itemIndex].currentGroupSize! += diffQuantity;
-      state.items[itemIndex].usersDetails[userDetailsIndex].quantity = userUpdateData!.quantity;
+      // Existing user
 
-      // If this was the only user - remove the item itself!
-      if (itemToUpdate.currentGroupSize === 0) {
+      let diff = userUpdateData!.quantity - state.userItems[userItemIndex].quantity
+      state.items[itemIndex].currentGroupSize! += diff
+      state.userItems[userItemIndex].quantity! = userUpdateData!.quantity
+
+      if (state.userItems[userItemIndex].quantity === 0) {
+        // Remove this item from the user's items
+        // Elad: Refund the user!
+        state.userItems.splice(userItemIndex, 1);
+      }
+      
+      if (state.items[itemIndex].currentGroupSize! === 0) {
+        // Remove the item entirely, as it has no subscribers.
         state.items.splice(itemIndex, 1);
         return {...state}
       }
 
-      // If the user updated their quantity to zero - remove them.
-      if (userUpdateData!.quantity === 0) {
-        let index: number = itemToUpdate.usersDetails.findIndex((userDetails: UserItemDetails) => userDetails.accountAddress === userUpdateData!.accountAddress)
-        state.items[itemIndex].usersDetails.splice(index, 1);
-        return {...state}
-      }
-
-
       return {...state}
-
     case STORE_ACTIONS.REMOVE_ITEM:
       state.items = state.items.filter(
         (item: ItemData) => item.url !== action.data.url

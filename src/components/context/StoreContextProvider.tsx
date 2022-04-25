@@ -14,12 +14,23 @@ export const StoreContext = createContext({} as IContextProps);
 export const StoreContextProvider: React.FC<any> = (props) => {
   const { secretjs } = useContext(SecretjsContext);
 
-  const [store, dispatch] = useReducer(StoreReducer, {}, () => {
-    return {
+  const [store, dispatch] = useReducer(
+    StoreReducer,
+    {
       items: [],
+      userItems: [],
+      contactData: { email: "", deliveryAddress: "" },
       loaded: false,
-    };
-  });
+    },
+    () => {
+      return {
+        items: [],
+        userItems: [],
+        contactData: { email: "", deliveryAddress: "" },
+        loaded: false,
+      };
+    }
+  );
 
   const asyncDispatch = asyncDispatchFunc(store, secretjs, dispatch);
   return (

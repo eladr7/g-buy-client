@@ -5,8 +5,10 @@ import NoResults from "./NoResults";
 import {
   AsyncDispatchFunc,
   CategoryStore,
+  ContactData,
   ItemData,
   ItemQuickViewData,
+  UserItem,
 } from "../consts";
 
 const ItemsViewLoader = {
@@ -17,7 +19,9 @@ const ItemsViewLoader = {
   getItemsView(
     items: ItemData[],
     openModalFunction: (itemQuickViewData: ItemQuickViewData) => void,
-    asyncDispatch: AsyncDispatchFunc
+    asyncDispatch: AsyncDispatchFunc,
+    userItems: UserItem[],
+    contactData: ContactData
   ) {
     if (items.length <= 0) {
       return <NoResults />;
@@ -25,14 +29,24 @@ const ItemsViewLoader = {
 
     return (
       <div>
-        {items.map((item: ItemData, index: number) => (
-          <ItemView
-            index={index}
-            item={item}
-            openModal={openModalFunction}
-            asyncDispatch={asyncDispatch}
-          />
-        ))}
+        {items.map((item: ItemData, index: number) => {
+          let userItemIndex = userItems.findIndex(
+            (userItem: UserItem) => userItem.url === item.url
+          );
+          let userQuantity =
+            userItemIndex === -1 ? 0 : userItems[userItemIndex].quantity;
+
+          return (
+            <ItemView
+              index={index}
+              item={item}
+              userQuantity={userQuantity}
+              contactData={contactData}
+              openModal={openModalFunction}
+              asyncDispatch={asyncDispatch}
+            />
+          );
+        })}
       </div>
     );
   },
@@ -65,7 +79,9 @@ const ItemsViewLoader = {
     const objectsViews = this.getItemsView(
       filterredItems,
       openModalFunction,
-      asyncDispatch
+      asyncDispatch,
+      categoryStore.userItems,
+      categoryStore.contactData
     );
     return objectsViews;
   },

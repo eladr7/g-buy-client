@@ -5,12 +5,15 @@ import {
   ItemQuickViewData,
   UserItemDetails,
   STORE_ACTIONS,
+  ContactData,
 } from "../consts";
 import { SecretjsContext } from "../context/SecretjsContext";
 
 interface ItemViewProps {
   index: number;
   item: ItemData;
+  userQuantity: number;
+  contactData: ContactData;
   openModal: (itemQuickViewData: ItemQuickViewData) => void;
   asyncDispatch: AsyncDispatchFunc;
 }
@@ -18,42 +21,37 @@ interface ItemViewProps {
 export const ItemView: React.FC<ItemViewProps> = ({
   index,
   item,
+  userQuantity,
+  contactData,
   openModal,
   asyncDispatch,
 }) => {
   const { secretjs } = useContext(SecretjsContext);
-  const getUserDetailsForItem = (accountAddress: string, item: ItemData) => {
-    let usersItemDetails: UserItemDetails[];
-    usersItemDetails = item.usersDetails.filter(
-      (userDetails: UserItemDetails) =>
-        userDetails.accountAddress === accountAddress
-    );
-    if (usersItemDetails.length > 0) {
-      return usersItemDetails[0];
-    }
-
-    return null;
-  };
 
   const getEditOrJoin = (accountAddress: string, item: ItemData) => {
-    let usersItemDetails = getUserDetailsForItem(secretjs!.address, item);
-    return usersItemDetails ? (
+    let userItemDetails: UserItemDetails = {
+      accountAddress: secretjs!.address,
+      email: contactData.email,
+      deliveryAddress: contactData.deliveryAddress,
+      quantity: userQuantity,
+    };
+    return userQuantity > 0 ? (
       <div>
         <button
           className="open-modal-btn"
-          onClick={() => openModal({ item, accountAddress, usersItemDetails })}
+          onClick={() => openModal({ item, accountAddress, userItemDetails })}
         >
           Edit/Leave
         </button>
         <div>
-          You chose to buy: {usersItemDetails.quantity} unit/s of this item
+          You chose to buy: {userItemDetails.quantity} unit/s of this item
         </div>
       </div>
     ) : (
       <button
         className="open-modal-btn"
         onClick={() =>
-          openModal({ item, accountAddress, usersItemDetails: null })
+          openModal({ item, accountAddress, userItemDetails: null })
         }
       >
         Join
@@ -63,7 +61,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   const removeButton = (): React.ReactNode => {
     return (
-      item.creatorAddress === secretjs?.address && (
+      item.sellerAddress === secretjs?.address && (
         <button
           onClick={() =>
             asyncDispatch({

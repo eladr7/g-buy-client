@@ -30,7 +30,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   const [groupSizeGoal, setGroupSizeGoal] = useState<number>(0);
 
   const [quantity, setQuantity] = useState<number>(0);
-  const [email, setEmail] = useState<string>();
+  const [email, setEmail] = useState<string>("");
   const [deliveryAddress, setDeliveryAddress] = useState<string>("");
 
   const { asyncDispatch } = useContext(StoreContext);
@@ -46,10 +46,10 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     }
 
     // If the user who clicked the item already participates in it, fill their details.
-    if (itemQuickViewData?.usersItemDetails) {
-      setQuantity(itemQuickViewData.usersItemDetails.quantity);
-      setEmail(itemQuickViewData.usersItemDetails.email);
-      setDeliveryAddress(itemQuickViewData.usersItemDetails.deliveryAddress);
+    if (itemQuickViewData?.userItemDetails) {
+      setQuantity(itemQuickViewData.userItemDetails.quantity);
+      setEmail(itemQuickViewData.userItemDetails.email);
+      setDeliveryAddress(itemQuickViewData.userItemDetails.deliveryAddress);
     }
 
     document.addEventListener("click", handleClickOutside, true);
@@ -99,12 +99,11 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         category,
         url,
         imgUrl: imgUrl,
-        creatorAddress: itemQuickViewData!.accountAddress,
+        sellerAddress: itemQuickViewData!.accountAddress,
+        sellerEmail: email,
         price,
         wantedPrice,
         groupSizeGoal,
-        // currentGroupSize: 0,
-        usersDetails: [userUpdateData],
       };
       // Elad: Add creation_code! (on adding/removing item)
       asyncDispatch({
@@ -224,7 +223,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
           onChange={(e) => setEmail(e.target.value)}
           // usersItemDetails not null means the user that clicked this item also already
           // participates in it, so they shouldn't be able to edit this field
-          readOnly={itemQuickViewData.usersItemDetails !== null}
+          readOnly={itemQuickViewData.userItemDetails !== null}
         />
       </div>
 
@@ -238,7 +237,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
           (e) => setDeliveryAddress(e.target.value),
           // usersItemDetails not null means the user that clicked this item also already
           // participates in it, so they shouldn't be able to edit this field
-          itemQuickViewData.usersItemDetails !== null
+          itemQuickViewData.userItemDetails !== null
         )}
 
       {/* Quantity input should only be presented if the item is not currently added by the

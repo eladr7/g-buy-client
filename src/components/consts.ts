@@ -17,23 +17,35 @@ export type ItemData = {
   category: string;
   url: string;
   imgUrl: string;
-  creatorAddress: string;
+  sellerAddress: string;
+  sellerEmail: string;
   price: number;
   wantedPrice: number;
   groupSizeGoal: number;
   currentGroupSize?: number;
-  usersDetails: UserItemDetails[];
 };
+
+export type UserItem = {
+  url: string,
+  quantity: number
+}
 
 export type ItemQuickViewData = {
   item: ItemData | null,
   accountAddress: string,
-  usersItemDetails: UserItemDetails | null
+  userItemDetails: UserItemDetails | null
+}
+
+export type ContactData = {
+  email: string;
+  deliveryAddress: string;
 }
 
 export type CategoryStore = {
   items: ItemData[];
-  loaded: boolean
+  userItems: UserItem[];
+  contactData: ContactData;
+  loaded: boolean;
 }
 
 export const STORE_ACTIONS = {

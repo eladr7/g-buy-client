@@ -36,13 +36,6 @@ const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 const CHAIN_ID = "secret-4";
 
 export const getItemsFromServer = async (category: string, secretjs: any) => {
-  let userDetails: UserItemDetails = {
-    accountAddress: secretjs.address,
-    email: "bla@bla.com",
-    deliveryAddress: "bla st, bla apt, bla  bla",
-    quantity: 1,
-  };
-  let usersDetails = [userDetails];
   let item: ItemData = {
     name: "This is a " + category + " item",
     category,
@@ -52,8 +45,8 @@ export const getItemsFromServer = async (category: string, secretjs: any) => {
     currentGroupSize: 1,
     url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
     imgUrl: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
-    creatorAddress: secretjs.address,
-    usersDetails,
+    sellerAddress: secretjs.address,
+    sellerEmail: "bla@bla.com",
   };
 
   return [item];
@@ -90,7 +83,7 @@ export const addItemToServer = async (
       codeHash: contractHash, // optional but way faster
       msg: {
         add_item: {
-          ...itme,
+          ...itme, // elad: Adjust fileds names to server (e.g. sellerEmail... )
         },
       },
       sentFunds: [], // optional
@@ -125,7 +118,7 @@ export const updateItemInServer = async (
         update_item: {
           category,
           url,
-          userUpdateData: { ...userUpdateData },
+          userDetails: { ...userUpdateData },
         },
       },
       sentFunds: [], // optional
