@@ -12,7 +12,7 @@ export type UserItemDetails = {
   quantity: number;
 }
 
-export type ItemData = {
+export type StaticItemData = {
   name: string;
   category: string;
   url: string;
@@ -22,8 +22,17 @@ export type ItemData = {
   price: number;
   wantedPrice: number;
   groupSizeGoal: number;
+}
+
+export type DynamicItemData = {
   currentGroupSize?: number;
+}
+
+export type ItemData = {
+  staticData: StaticItemData;
+  dynamicData: DynamicItemData;
 };
+
 
 export type UserItem = {
   url: string,
@@ -59,8 +68,10 @@ export type StoreActionData = {
   category: string;
   item?: ItemData;
   items?: ItemData[];
+  fetchedData?: CategoryStore;
   url?: string;
   userUpdateData?: UserItemDetails;
+  oldQuantity?: number;
 }
 
 export type StoreAction = {

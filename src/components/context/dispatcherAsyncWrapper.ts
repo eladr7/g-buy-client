@@ -1,5 +1,5 @@
 import { CategoryStore, StoreAction, STORE_ACTIONS } from "../consts";
-import { addItemToServer, getItemsFromServer, removeItemFromServer, updateItemInServer } from "./ServerAPIFunctions";
+import { addItemToServer, getItemsFromServer, makePayment, removeItemFromServer, updateItemInServer } from "./ServerAPIFunctions";
 
 export const asyncDispatchFunc = (store: CategoryStore, secretjs: any, dispatch: any) =>  async (action: StoreAction) => {
     let succeded: boolean = false;
@@ -12,12 +12,12 @@ export const asyncDispatchFunc = (store: CategoryStore, secretjs: any, dispatch:
         if (store.loaded === true) {
           return;
         }
-        let items = await getItemsFromServer(category, secretjs!);
+        let fetchedData = await getItemsFromServer(category, secretjs!);
         dispatch({
           type: STORE_ACTIONS.LOAD_ITEMS,
           data: {
             category: category,
-            items,
+            fetchedData,
           },
         });
         break;
@@ -41,6 +41,20 @@ export const asyncDispatchFunc = (store: CategoryStore, secretjs: any, dispatch:
         // Elad: Consider just getting the items and perform all the calculations
         // on the server side
         // Elad: Check in the client if to remove - and send remove instead of update.
+
+        let oldQuantity = action.data.oldQuantity!;
+        let newQuantity = action.data.userUpdateData!.quantity;
+
+        if (oldQuantity === newQuantity) {
+            alert("Same quantity - nothing to update!")
+            return
+        }
+        let wantedPrice = action.data.item!.staticData.wantedPrice;
+        let payed = await makePayment(secretjs!, oldQuantity, newQuantity, wantedPrice)
+        if (!payed) {
+            alert("Payment failed")
+            return
+        }
         succeded = await updateItemInServer(
           category,
           url!,

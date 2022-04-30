@@ -61,14 +61,14 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   const removeButton = (): React.ReactNode => {
     return (
-      item.sellerAddress === secretjs?.address && (
+      item.staticData.sellerAddress === secretjs?.address && (
         <button
           onClick={() =>
             asyncDispatch({
               type: STORE_ACTIONS.REMOVE_ITEM,
               data: {
-                category: item.category,
-                url: item.url,
+                category: item.staticData.category,
+                url: item.staticData.url,
               },
             })
           }
@@ -91,14 +91,14 @@ export const ItemView: React.FC<ItemViewProps> = ({
       }}
       className="clear-fix"
     >
-      <p>{item.name}</p>
+      <p>{item.staticData.name}</p>
       <div>
-        <p>Price: {item.price}$</p>
-        <p>Wanted price: {item.wantedPrice}$</p>
+        <p>Price: {item.staticData.price}$</p>
+        <p>Wanted price: {item.staticData.wantedPrice}$</p>
       </div>
       <div>
-        <p>Current group size: {item.currentGroupSize}</p>
-        <p>Group size goal: {item.groupSizeGoal}</p>
+        <p>Current group size: {item.dynamicData.currentGroupSize}</p>
+        <p>Group size goal: {item.staticData.groupSizeGoal}</p>
       </div>
       <div
         style={{
@@ -107,8 +107,8 @@ export const ItemView: React.FC<ItemViewProps> = ({
           alignItems: "center",
         }}
       >
-        <a href={item.url}>URL</a>
-        <img src={item.imgUrl} alt="" />
+        <a href={item.staticData.url}>URL</a>
+        <img src={item.staticData.imgUrl} alt="" />
       </div>
       <div className="object">
         {removeButton()}

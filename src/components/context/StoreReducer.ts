@@ -9,7 +9,9 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
       if (state.loaded === true) {
         return state;
       }
-      state.items = action.data.items!;
+      state.items = action.data.fetchedData!.items;
+      state.contactData = action.data.fetchedData!.contactData;
+      state.userItems = action.data.fetchedData!.userItems;
       state.loaded = true;
       return {...state};
     // return [
@@ -40,7 +42,7 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
       } = action
 
       // For updating the item's view 
-      let itemIndex = state.items.findIndex((item: ItemData) => item.url === action.data.url)
+      let itemIndex = state.items.findIndex((item: ItemData) => item.staticData.url === action.data.url)
       if (itemIndex === -1) {
         return state
       }
@@ -58,14 +60,14 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
         }
 
         state.userItems.push({url: action.data.url!, quantity: userUpdateData!.quantity})
-        state.items[itemIndex].currentGroupSize! += userUpdateData!.quantity
+        state.items[itemIndex].dynamicData.currentGroupSize! += userUpdateData!.quantity
         return {...state}
       }
 
       // Existing user
 
       let diff = userUpdateData!.quantity - state.userItems[userItemIndex].quantity
-      state.items[itemIndex].currentGroupSize! += diff
+      state.items[itemIndex].dynamicData.currentGroupSize! += diff
       state.userItems[userItemIndex].quantity! = userUpdateData!.quantity
 
       if (state.userItems[userItemIndex].quantity === 0) {
@@ -74,7 +76,7 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
         state.userItems.splice(userItemIndex, 1);
       }
       
-      if (state.items[itemIndex].currentGroupSize! === 0) {
+      if (state.items[itemIndex].dynamicData.currentGroupSize! === 0) {
         // Remove the item entirely, as it has no subscribers.
         state.items.splice(itemIndex, 1);
         return {...state}
@@ -83,7 +85,7 @@ export const StoreReducer = (state: CategoryStore, action: StoreAction) => {
       return {...state}
     case STORE_ACTIONS.REMOVE_ITEM:
       state.items = state.items.filter(
-        (item: ItemData) => item.url !== action.data.url
+        (item: ItemData) => item.staticData.url !== action.data.url
       )
       // Elad: add the logic to remove from the DB
       return {...state};

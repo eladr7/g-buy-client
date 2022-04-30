@@ -1,17 +1,20 @@
 import React from "react";
-import { CategoryTabs } from "./components/CategoryTabs";
 import { SecretjsContextProvider } from "./components/context/SecretjsContext";
-import { Footer } from "./components/Footer";
-import { Header } from "./components/Header";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { MainPage } from "./components/MainPage";
+import { Login } from "./components/Login";
 
 interface AppProps {}
 const App: React.FC<AppProps> = ({}) => {
   return (
     <div className="App">
       <SecretjsContextProvider>
-        <Header />
-        <CategoryTabs />
-        <Footer />
+        <BrowserRouter>
+          <div>
+            <Route exact path="/" component={Login} />
+            <Route exact path="/main" component={MainPage} />
+          </div>
+        </BrowserRouter>
       </SecretjsContextProvider>
     </div>
   );

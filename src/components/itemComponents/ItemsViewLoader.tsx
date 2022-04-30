@@ -31,7 +31,7 @@ const ItemsViewLoader = {
       <div>
         {items.map((item: ItemData, index: number) => {
           let userItemIndex = userItems.findIndex(
-            (userItem: UserItem) => userItem.url === item.url
+            (userItem: UserItem) => userItem.url === item.staticData.url
           );
           let userQuantity =
             userItemIndex === -1 ? 0 : userItems[userItemIndex].quantity;
@@ -56,7 +56,9 @@ const ItemsViewLoader = {
     if (searchPhrase) {
       const searchingFor = (searchPhrase: string) => {
         return function (item: ItemData) {
-          return item.name.toLowerCase().includes(searchPhrase.toLowerCase());
+          return item.staticData.name
+            .toLowerCase()
+            .includes(searchPhrase.toLowerCase());
         };
       };
       return categoryStore.items.filter(searchingFor(searchPhrase));
