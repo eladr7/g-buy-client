@@ -2,10 +2,13 @@ import React, { createContext, useEffect, useState } from "react";
 import { SecretNetworkClient } from "secretjs";
 
 // This endpoint is a reverse proxy for a main-net scrt node
-const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
-const CHAIN_ID = "secret-4";
+// const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
+// const CHAIN_ID = "secret-4";
 // const CONTRACT_ADDRESS = "";
 // const CODE_ID = ;
+
+const NODE_URL = "https://rpc.pulsar.griptapejs.com:443";
+const CHAIN_ID = "pulsar-2";
 
 declare global {
   interface Window {

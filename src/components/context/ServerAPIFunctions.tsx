@@ -89,7 +89,7 @@ export const setViewingKeyInServer = async (
   viewingKey: string,
   secretjs: any
 ) => {
-  return true;
+  // return true;
   const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
   const result = await secretjs.tx.compute.executeContract(
     {
@@ -117,37 +117,37 @@ export const setViewingKeyInServer = async (
 };
 
 export const getItemsFromServer = async (category: string, secretjs: any) => {
-  let item: ItemData = {
-    static_data: {
-      name: "This is a " + category + " item",
-      category,
-      price: 1000,
-      wanted_price: 800,
-      group_size_goal: 10,
-      url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
-      img_url: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
-      seller_address: secretjs.address,
-      seller_email: "bla@bla.com",
-    },
-    current_group_size: 1,
-  };
+  // let item: ItemData = {
+  //   static_data: {
+  //     name: "This is a " + category + " item",
+  //     category,
+  //     price: 1000,
+  //     wanted_price: 800,
+  //     group_size_goal: 10,
+  //     url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
+  //     img_url: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
+  //     seller_address: secretjs.address,
+  //     seller_email: "bla@bla.com",
+  //   },
+  //   current_group_size: 1,
+  // };
 
-  let fetchedDataMock: CategoryStore = {
-    items: [item],
-    userItems: [
-      {
-        url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
-        quantity: 1,
-      },
-    ],
-    contactData: {
-      email: "user@email.com",
-      delivery_address: "cool user crib",
-    },
-    loaded: true,
-  };
+  // let fetchedDataMock: CategoryStore = {
+  //   items: [item],
+  //   userItems: [
+  //     {
+  //       url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
+  //       quantity: 1,
+  //     },
+  //   ],
+  //   contactData: {
+  //     email: "user@email.com",
+  //     delivery_address: "cool user crib",
+  //   },
+  //   loaded: true,
+  // };
 
-  return fetchedDataMock;
+  // return fetchedDataMock;
   const viewingKey = localStorage.getItem("viewing-key");
   const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
   const result = await secretjs.query.compute.queryContract({
@@ -186,7 +186,7 @@ export const addItemToServer = async (
   itme: ItemData,
   secretjs: any
 ) => {
-  return true;
+  // return true;
   const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
   const result = await secretjs.tx.compute.executeContract(
     {
@@ -219,7 +219,7 @@ export const updateItemInServer = async (
   userUpdateData: UserItemDetails,
   secretjs: any
 ) => {
-  return true;
+  // return true;
   const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
   const result = await secretjs.tx.compute.executeContract(
     {
@@ -260,7 +260,7 @@ export const removeItemFromServer = async (
   url: string,
   secretjs: any
 ) => {
-  return true;
+  // return true;
   const viewingKey = localStorage.getItem("viewing-key");
   const contractHash = await secretjs.query.compute.codeHash(CODE_ID);
   const result = await secretjs.tx.compute.executeContract(
