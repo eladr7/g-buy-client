@@ -5,11 +5,12 @@ import {
   UserItemDetails,
   UserItem,
   CategoryStore,
+  SUCCESS_STATUS,
 } from "../consts";
 
 type SetViewingKeyResult = {
   set_viewing_key: {
-    status: boolean;
+    status: string;
   };
 };
 
@@ -24,30 +25,31 @@ type FetchedItems = {
 
 type AddItemResult = {
   add_item: {
-    status: boolean;
+    status: string;
   };
 };
 
 type UpdateItemResult = {
   update_item: {
-    status: boolean;
+    status: string;
   };
 };
 
 type RemoveItemResult = {
   remove_item: {
-    status: boolean;
+    status: string;
   };
 };
 
-const SUCCESS_STATUS = "Fetched successfully";
-
-const CONTRACT_ADDRESS = "secret13ut7y0jzgjsh6qn3hrn6t2lspezxpr3tjptdn8";
-const CODE_ID = 460;
+const CONTRACT_ADDRESS = "secret1ncfk9dqfdvd9gcvkfkcrgj0jpludkk9wsm5g5l";
+const CODE_ID = 8815;
 
 // This endpoint is a reverse proxy for a main-net scrt node
-const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
-const CHAIN_ID = "secret-4";
+// const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
+// const CHAIN_ID = "secret-4";
+
+const NODE_URL = "https://rpc.pulsar.griptapejs.com:443";
+const CHAIN_ID = "pulsar-2";
 
 export const makePayment = async (
   secretjs: any,
@@ -62,7 +64,7 @@ export const makePayment = async (
   if (newQuantity - oldQuantity < 0) {
     // The user should be refunded, the refund will be made in the server side.
     // But the user will pay the transaction fee
-    ammountToPay = 100000;
+    ammountToPay = 500000;
   } else {
     ammountToPay = wantedPrice * (newQuantity - oldQuantity);
   }
@@ -81,25 +83,6 @@ export const makePayment = async (
   );
 
   return tx.code === 0;
-
-  // // The user wants to purchase more items
-  // const tx2 = await secretjs.tx.compute.executeContract(
-  //   {
-  //     sender: secretjs!.address,
-  //     contractAddress: CONTRACT_ADDRESS,
-  //     codeHash: contractHash, // optional but way faster
-  //     msg: {
-  //       transfer: {
-  //         recipient: CONTRACT_ADDRESS,
-  //         amount: ammountToPay.toString(),
-  //       },
-  //     },
-  //     sentFunds: [], // optional
-  //   },
-  //   {
-  //     gasLimit: 100_000,
-  //   }
-  // );
 };
 
 export const setViewingKeyInServer = async (
@@ -121,7 +104,7 @@ export const setViewingKeyInServer = async (
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 500_000,
     }
   );
 
@@ -130,25 +113,23 @@ export const setViewingKeyInServer = async (
   } = JSON.parse(fromUtf8(result.data[0])) as SetViewingKeyResult;
 
   // Elad: Charge/refund the user!
-  return status;
+  return status === SUCCESS_STATUS;
 };
 
 export const getItemsFromServer = async (category: string, secretjs: any) => {
   let item: ItemData = {
-    staticData: {
+    static_data: {
       name: "This is a " + category + " item",
       category,
       price: 1000,
-      wantedPrice: 800,
-      groupSizeGoal: 10,
+      wanted_price: 800,
+      group_size_goal: 10,
       url: "https://www.ebay.com/itm/294315699490?_trkparms=pageci%3A5c749228-c0c0-11ec-8401-0e6a9719235b%7Cparentrq%3A47a2d6d61800a7b252a3ea29fffeaf7c%7Ciid%3A1",
-      imgUrl: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
-      sellerAddress: secretjs.address,
-      sellerEmail: "bla@bla.com",
+      img_url: "https://i.ebayimg.com/images/g/ZicAAOSw8klhlTWz/s-l225.webp",
+      seller_address: secretjs.address,
+      seller_email: "bla@bla.com",
     },
-    dynamicData: {
-      currentGroupSize: 1,
-    },
+    current_group_size: 1,
   };
 
   let fetchedDataMock: CategoryStore = {
@@ -159,7 +140,10 @@ export const getItemsFromServer = async (category: string, secretjs: any) => {
         quantity: 1,
       },
     ],
-    contactData: { email: "user@email.com", deliveryAddress: "cool user crib" },
+    contactData: {
+      email: "user@email.com",
+      delivery_address: "cool user crib",
+    },
     loaded: true,
   };
 
@@ -211,13 +195,13 @@ export const addItemToServer = async (
       codeHash: contractHash, // optional but way faster
       msg: {
         add_item: {
-          ...itme, // elad: Adjust fileds names to server (e.g. sellerEmail... )
+          ...itme.static_data, // elad: Adjust fileds names to server (e.g. sellerEmail... )
         },
       },
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 500_000,
     }
   );
 
@@ -226,7 +210,7 @@ export const addItemToServer = async (
   } = JSON.parse(fromUtf8(result.data[0])) as AddItemResult;
 
   // Elad: Charge the user!
-  return status;
+  return status === SUCCESS_STATUS;
 };
 
 export const updateItemInServer = async (
@@ -246,13 +230,11 @@ export const updateItemInServer = async (
         update_item: {
           category,
           url,
-          userDetails: {
-            personal: {
-              account_address: userUpdateData.accountAddress,
-              contact_data: {
-                email: userUpdateData.email,
-                delivery_address: userUpdateData.deliveryAddress,
-              },
+          user_details: {
+            account_address: userUpdateData.accountAddress,
+            contact_data: {
+              email: userUpdateData.email,
+              delivery_address: userUpdateData.deliveryAddress,
             },
             quantity: userUpdateData.quantity,
           },
@@ -261,7 +243,7 @@ export const updateItemInServer = async (
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 500_000,
     }
   );
 
@@ -270,7 +252,7 @@ export const updateItemInServer = async (
   } = JSON.parse(fromUtf8(result.data[0])) as UpdateItemResult;
 
   // Elad: Charge/refund the user!
-  return status;
+  return status === SUCCESS_STATUS;
 };
 
 export const removeItemFromServer = async (
@@ -296,7 +278,7 @@ export const removeItemFromServer = async (
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 500_000,
     }
   );
 
@@ -305,5 +287,5 @@ export const removeItemFromServer = async (
   } = JSON.parse(fromUtf8(result.data[0])) as RemoveItemResult;
 
   // Elad: Charge/refund the user!
-  return status;
+  return status === SUCCESS_STATUS;
 };

@@ -39,10 +39,10 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     // If opened via clicking an existing item (As opposed to adding a new item), set the items'
     // details
     if (itemQuickViewData?.item) {
-      setItemName(itemQuickViewData.item.staticData.name);
-      setPrice(itemQuickViewData.item.staticData.price);
-      setWantedPrice(itemQuickViewData.item.staticData.wantedPrice);
-      setGroupSizeGoal(itemQuickViewData.item.staticData.groupSizeGoal);
+      setItemName(itemQuickViewData.item.static_data.name);
+      setPrice(itemQuickViewData.item.static_data.price);
+      setWantedPrice(itemQuickViewData.item.static_data.wanted_price);
+      setGroupSizeGoal(itemQuickViewData.item.static_data.group_size_goal);
     }
 
     // If the user who clicked the item already participates in it, fill their details.
@@ -95,18 +95,18 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       // Add a new item!
 
       let itemData: ItemData = {
-        staticData: {
+        static_data: {
           name: itemName,
           category,
           url,
-          imgUrl: imgUrl,
-          sellerAddress: itemQuickViewData!.accountAddress,
-          sellerEmail: email,
+          img_url: imgUrl,
+          seller_address: itemQuickViewData!.accountAddress,
+          seller_email: email,
           price,
-          wantedPrice,
-          groupSizeGoal,
+          wanted_price: wantedPrice,
+          group_size_goal: groupSizeGoal,
         },
-        dynamicData: { currentGroupSize: 0 },
+        current_group_size: 0,
       };
       asyncDispatch({
         type: STORE_ACTIONS.APPEND_ITEM,
@@ -131,7 +131,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       type: STORE_ACTIONS.UPDATE_ITEM,
       data: {
         category,
-        url: itemQuickViewData!.item!.staticData.url,
+        url: itemQuickViewData!.item!.static_data.url,
         userUpdateData,
         oldQuantity,
         item: itemQuickViewData.item,

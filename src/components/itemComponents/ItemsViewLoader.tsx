@@ -31,7 +31,7 @@ const ItemsViewLoader = {
       <div>
         {items.map((item: ItemData, index: number) => {
           let userItemIndex = userItems.findIndex(
-            (userItem: UserItem) => userItem.url === item.staticData.url
+            (userItem: UserItem) => userItem.url === item.static_data.url
           );
           let userQuantity =
             userItemIndex === -1 ? 0 : userItems[userItemIndex].quantity;
@@ -56,7 +56,7 @@ const ItemsViewLoader = {
     if (searchPhrase) {
       const searchingFor = (searchPhrase: string) => {
         return function (item: ItemData) {
-          return item.staticData.name
+          return item.static_data.name
             .toLowerCase()
             .includes(searchPhrase.toLowerCase());
         };

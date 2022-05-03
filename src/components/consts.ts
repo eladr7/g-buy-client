@@ -16,21 +16,17 @@ export type StaticItemData = {
   name: string;
   category: string;
   url: string;
-  imgUrl: string;
-  sellerAddress: string;
-  sellerEmail: string;
+  img_url: string;
+  seller_address: string;
+  seller_email: string;
   price: number;
-  wantedPrice: number;
-  groupSizeGoal: number;
-}
-
-export type DynamicItemData = {
-  currentGroupSize?: number;
+  wanted_price: number;
+  group_size_goal: number;
 }
 
 export type ItemData = {
-  staticData: StaticItemData;
-  dynamicData: DynamicItemData;
+  static_data: StaticItemData;
+  current_group_size?: number;
 };
 
 
@@ -47,7 +43,7 @@ export type ItemQuickViewData = {
 
 export type ContactData = {
   email: string;
-  deliveryAddress: string;
+  delivery_address: string;
 }
 
 export type CategoryStore = {
@@ -82,3 +78,4 @@ export type StoreAction = {
 export type DispatchFunc =  ({ type, data }: StoreAction) => void;
 export type AsyncDispatchFunc = (action: StoreAction) => Promise<void>;
 
+export const SUCCESS_STATUS = "success";

@@ -49,7 +49,7 @@ export const asyncDispatchFunc = (store: CategoryStore, secretjs: any, dispatch:
             alert("Same quantity - nothing to update!")
             return
         }
-        let wantedPrice = action.data.item!.staticData.wantedPrice;
+        let wantedPrice = action.data.item!.static_data.wanted_price;
         let payed = await makePayment(secretjs!, oldQuantity, newQuantity, wantedPrice)
         if (!payed) {
             alert("Payment failed")

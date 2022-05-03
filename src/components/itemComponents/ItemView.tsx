@@ -32,7 +32,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
     let userItemDetails: UserItemDetails = {
       accountAddress: secretjs!.address,
       email: contactData.email,
-      deliveryAddress: contactData.deliveryAddress,
+      deliveryAddress: contactData.delivery_address,
       quantity: userQuantity,
     };
     return userQuantity > 0 ? (
@@ -61,14 +61,14 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   const removeButton = (): React.ReactNode => {
     return (
-      item.staticData.sellerAddress === secretjs?.address && (
+      item.static_data.seller_address === secretjs?.address && (
         <button
           onClick={() =>
             asyncDispatch({
               type: STORE_ACTIONS.REMOVE_ITEM,
               data: {
-                category: item.staticData.category,
-                url: item.staticData.url,
+                category: item.static_data.category,
+                url: item.static_data.url,
               },
             })
           }
@@ -91,14 +91,14 @@ export const ItemView: React.FC<ItemViewProps> = ({
       }}
       className="clear-fix"
     >
-      <p>{item.staticData.name}</p>
+      <p>{item.static_data.name}</p>
       <div>
-        <p>Price: {item.staticData.price}$</p>
-        <p>Wanted price: {item.staticData.wantedPrice}$</p>
+        <p>Price: {item.static_data.price}$</p>
+        <p>Wanted price: {item.static_data.wanted_price}$</p>
       </div>
       <div>
-        <p>Current group size: {item.dynamicData.currentGroupSize}</p>
-        <p>Group size goal: {item.staticData.groupSizeGoal}</p>
+        <p>Current group size: {item.current_group_size}</p>
+        <p>Group size goal: {item.static_data.group_size_goal}</p>
       </div>
       <div
         style={{
@@ -107,8 +107,8 @@ export const ItemView: React.FC<ItemViewProps> = ({
           alignItems: "center",
         }}
       >
-        <a href={item.staticData.url}>URL</a>
-        <img src={item.staticData.imgUrl} alt="" />
+        <a href={item.static_data.url}>URL</a>
+        <img src={item.static_data.img_url} alt="" />
       </div>
       <div className="object">
         {removeButton()}

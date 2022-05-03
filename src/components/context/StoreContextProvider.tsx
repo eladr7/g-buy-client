@@ -19,14 +19,14 @@ export const StoreContextProvider: React.FC<any> = (props) => {
     {
       items: [],
       userItems: [],
-      contactData: { email: "", deliveryAddress: "" },
+      contactData: { email: "", delivery_address: "" },
       loaded: false,
     },
     () => {
       return {
         items: [],
         userItems: [],
-        contactData: { email: "", deliveryAddress: "" },
+        contactData: { email: "", delivery_address: "" },
         loaded: false,
       };
     }
