@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
+import { useSnapshot } from "valtio";
 import {
-  AsyncDispatchFunc,
   ItemData,
   ItemQuickViewData,
   UserItemDetails,
-  STORE_ACTIONS,
   ContactData,
+  RemoveCategoryItem,
 } from "../consts";
-import { SecretjsContext } from "../context/SecretjsContext";
+import { secretjsStore } from "../context/SecretjsStore";
 
 interface ItemViewProps {
   index: number;
@@ -15,7 +15,7 @@ interface ItemViewProps {
   userQuantity: number;
   contactData: ContactData;
   openModal: (itemQuickViewData: ItemQuickViewData) => void;
-  asyncDispatch: AsyncDispatchFunc;
+  removeCategoryItem: RemoveCategoryItem;
 }
 
 export const ItemView: React.FC<ItemViewProps> = ({
@@ -24,17 +24,21 @@ export const ItemView: React.FC<ItemViewProps> = ({
   userQuantity,
   contactData,
   openModal,
-  asyncDispatch,
+  removeCategoryItem,
 }) => {
-  const { secretjs } = useContext(SecretjsContext);
-
   const getEditOrJoin = (accountAddress: string, item: ItemData) => {
-    let userItemDetails: UserItemDetails = {
-      accountAddress: secretjs!.address,
-      email: contactData.email,
-      deliveryAddress: contactData.delivery_address,
-      quantity: userQuantity,
-    };
+    debugger;
+    let userItemDetails: UserItemDetails | null;
+
+    userItemDetails =
+      userQuantity > 0
+        ? {
+            accountAddress: secretjsStore.secretjs!.address,
+            email: contactData.email,
+            deliveryAddress: contactData.delivery_address,
+            quantity: userQuantity,
+          }
+        : null;
     return userQuantity > 0 ? (
       <div>
         <button
@@ -44,7 +48,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
           Edit/Leave
         </button>
         <div>
-          You chose to buy: {userItemDetails.quantity} unit/s of this item
+          You chose to buy: {userItemDetails!.quantity} unit/s of this item
         </div>
       </div>
     ) : (
@@ -61,18 +65,8 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   const removeButton = (): React.ReactNode => {
     return (
-      item.static_data.seller_address === secretjs?.address && (
-        <button
-          onClick={() =>
-            asyncDispatch({
-              type: STORE_ACTIONS.REMOVE_ITEM,
-              data: {
-                category: item.static_data.category,
-                url: item.static_data.url,
-              },
-            })
-          }
-        >
+      item.static_data.seller_address === secretjsStore.secretjs?.address && (
+        <button onClick={() => removeCategoryItem(item.static_data.url)}>
           Remove this purchasing group
         </button>
       )
@@ -81,7 +75,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
 
   return (
     <div
-      key={index.toString()}
+      key={index}
       style={{
         borderStyle: "dotted",
         width: "50%",
@@ -93,8 +87,8 @@ export const ItemView: React.FC<ItemViewProps> = ({
     >
       <p>{item.static_data.name}</p>
       <div>
-        <p>Price: {item.static_data.price}$</p>
-        <p>Wanted price: {item.static_data.wanted_price}$</p>
+        <p>Price: {item.static_data.price} SCRT</p>
+        <p>Wanted price: {item.static_data.wanted_price} SCRT</p>
       </div>
       <div>
         <p>Current group size: {item.current_group_size}</p>
@@ -112,7 +106,7 @@ export const ItemView: React.FC<ItemViewProps> = ({
       </div>
       <div className="object">
         {removeButton()}
-        {getEditOrJoin(secretjs!.address, item)}
+        {getEditOrJoin(secretjsStore.secretjs!.address, item)}
       </div>
     </div>
   );

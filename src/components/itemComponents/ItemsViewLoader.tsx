@@ -4,10 +4,11 @@ import { ItemView } from "./ItemView";
 import NoResults from "./NoResults";
 import {
   AsyncDispatchFunc,
-  CategoryStore,
+  CategoryStoreData,
   ContactData,
   ItemData,
   ItemQuickViewData,
+  RemoveCategoryItem,
   UserItem,
 } from "../consts";
 
@@ -19,7 +20,7 @@ const ItemsViewLoader = {
   getItemsView(
     items: ItemData[],
     openModalFunction: (itemQuickViewData: ItemQuickViewData) => void,
-    asyncDispatch: AsyncDispatchFunc,
+    removeCategoryItem: RemoveCategoryItem,
     userItems: UserItem[],
     contactData: ContactData
   ) {
@@ -43,7 +44,7 @@ const ItemsViewLoader = {
               userQuantity={userQuantity}
               contactData={contactData}
               openModal={openModalFunction}
-              asyncDispatch={asyncDispatch}
+              removeCategoryItem={removeCategoryItem}
             />
           );
         })}
@@ -51,7 +52,7 @@ const ItemsViewLoader = {
     );
   },
 
-  filterItems(categoryStore: CategoryStore, searchPhrase: string) {
+  filterItems(categoryStore: CategoryStoreData, searchPhrase: string) {
     if (!categoryStore) return [];
     if (searchPhrase) {
       const searchingFor = (searchPhrase: string) => {
@@ -71,17 +72,18 @@ const ItemsViewLoader = {
   // Notice that if an empty searchPhrase is supplied, all items from ObjectsContainer will be
   // returned.
   getFilteredItemsView(
-    categoryStore: CategoryStore,
+    categoryStore: CategoryStoreData,
     searchPhrase: string,
     openModalFunction: (itemQuickViewData: ItemQuickViewData) => void,
-    asyncDispatch: AsyncDispatchFunc
+    removeCategoryItem: RemoveCategoryItem
   ) {
     const filterredItems = this.filterItems(categoryStore, searchPhrase);
+    debugger;
 
     const objectsViews = this.getItemsView(
       filterredItems,
       openModalFunction,
-      asyncDispatch,
+      removeCategoryItem,
       categoryStore.userItems,
       categoryStore.contactData
     );

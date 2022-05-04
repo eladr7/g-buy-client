@@ -1,15 +1,17 @@
-import React, { FormEvent, useContext, useEffect, useState } from "react";
-import { SecretjsContext } from "./context/SecretjsContext";
+import React, { FormEvent, useEffect, useState } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
-import { setViewingKeyInServer } from "./context/ServerAPIFunctions";
+import { SecretNetworkClient, Wallet } from "secretjs";
+import { laptopsStore } from "./context/CategoryStore";
+import { secretjsStore } from "./context/SecretjsStore";
 
 interface ChildComponentProps extends RouteComponentProps<any> {
   /* other props for ChildComponent */
 }
 export const Login: React.FC<ChildComponentProps> = () => {
   const history = useHistory();
+  // const { secretjs } = useSnapshot(secretjsStore);
 
-  const { secretjs } = useContext(SecretjsContext);
+  // const { secretjs } = useContext(SecretjsContext);
   const [address, setAddress] = useState<string>("");
   const [viewingKey, setViewingKey] = useState<string>("");
 
@@ -20,21 +22,24 @@ export const Login: React.FC<ChildComponentProps> = () => {
 
   useEffect(() => {
     // localStorage.setItem("viewing-key", "");
-
     const viewingKey = localStorage.getItem("viewing-key");
     if (viewingKey) {
       navigateToMainPage();
       return;
     }
 
-    if (secretjs) {
-      setAddress(secretjs.address);
+    if (secretjsStore.secretjs) {
+      setAddress(secretjsStore.secretjs.address);
     }
-  }, [secretjs]);
+  }, [secretjsStore.secretjs]);
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let addedSuccessfully = await setViewingKeyInServer(viewingKey, secretjs);
+    let addedSuccessfully = await laptopsStore.setViewingKeyInServer(
+      secretjsStore.secretjs,
+      secretjsStore.contractHash,
+      viewingKey
+    );
 
     if (addedSuccessfully) {
       localStorage.setItem("viewing-key", viewingKey);

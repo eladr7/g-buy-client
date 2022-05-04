@@ -1,18 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { findDOMNode } from "react-dom";
-import {
-  ItemData,
-  ItemQuickViewData,
-  UserItemDetails,
-  STORE_ACTIONS,
-} from "../consts";
-import { StoreContext } from "../context/StoreContextProvider";
+import { ItemData, ItemQuickViewData, UserItemDetails } from "../consts";
 
 interface ItemQuickViewProps {
   itemQuickViewData: ItemQuickViewData | undefined;
   openModal: boolean;
   closeModal: () => void;
   category: string;
+  addCategoryItem: (item: ItemData) => Promise<void>;
+  updateCategoryItem: (
+    url: string,
+    item: ItemData,
+    userUpdateData: UserItemDetails,
+    oldQuantity: number
+  ) => Promise<void>;
 }
 
 export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
@@ -20,20 +21,20 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
   openModal,
   closeModal,
   category,
+  addCategoryItem,
+  updateCategoryItem,
 }) => {
   const [url, setUrl] = useState<string>("");
   const [imgUrl, setImgUrl] = useState<string>("");
 
   const [itemName, setItemName] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
-  const [wantedPrice, setWantedPrice] = useState<number>(0);
+  const [price, setPrice] = useState<string>("0");
+  const [wantedPrice, setWantedPrice] = useState<string>("0");
   const [groupSizeGoal, setGroupSizeGoal] = useState<number>(0);
 
   const [quantity, setQuantity] = useState<number>(0);
   const [email, setEmail] = useState<string>("");
   const [deliveryAddress, setDeliveryAddress] = useState<string>("");
-
-  const { asyncDispatch } = useContext(StoreContext);
 
   useEffect(() => {
     // If opened via clicking an existing item (As opposed to adding a new item), set the items'
@@ -63,8 +64,8 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       setImgUrl("");
       setItemName("");
 
-      setPrice(0);
-      setWantedPrice(0);
+      setPrice("0");
+      setWantedPrice("0");
       setGroupSizeGoal(0);
       setQuantity(0);
 
@@ -81,14 +82,15 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     }
   };
 
-  const updateItem = () => {
+  const updateItem = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     let userUpdateData: UserItemDetails = {
       accountAddress: itemQuickViewData!.accountAddress,
       deliveryAddress: deliveryAddress!,
       email: email!,
       quantity: quantity!,
     };
-
+    debugger;
     // If the item doesn't already exist, add it
     // Elad: Change the logic to - only seller adds a product
     if (!itemQuickViewData?.item) {
@@ -97,7 +99,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       let itemData: ItemData = {
         static_data: {
           name: itemName,
-          category,
+          category: category.toLowerCase(),
           url,
           img_url: imgUrl,
           seller_address: itemQuickViewData!.accountAddress,
@@ -108,13 +110,9 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         },
         current_group_size: 0,
       };
-      asyncDispatch({
-        type: STORE_ACTIONS.APPEND_ITEM,
-        data: {
-          category,
-          item: itemData,
-        },
-      });
+
+      addCategoryItem(itemData);
+      closeModal();
       return;
     }
 
@@ -127,16 +125,14 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     let oldQuantity = itemQuickViewData.userItemDetails
       ? itemQuickViewData.userItemDetails.quantity
       : 0;
-    asyncDispatch({
-      type: STORE_ACTIONS.UPDATE_ITEM,
-      data: {
-        category,
-        url: itemQuickViewData!.item!.static_data.url,
-        userUpdateData,
-        oldQuantity,
-        item: itemQuickViewData.item,
-      },
-    });
+
+    updateCategoryItem(
+      itemQuickViewData!.item!.static_data.url,
+      itemQuickViewData.item,
+      userUpdateData,
+      oldQuantity
+    );
+    closeModal();
   };
 
   const input = (
@@ -162,7 +158,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
 
   const fillForm = (itemQuickViewData: ItemQuickViewData) => (
     <form
-      onSubmit={updateItem}
+      onSubmit={(e) => updateItem(e)}
       style={{ display: "flex", flexDirection: "column" }}
     >
       {/* If the item doesn't exist, add inputs for its url and image */}
@@ -191,7 +187,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         "price",
         "number",
         price,
-        (e) => setPrice(parseInt(e.target.value)),
+        (e) => setPrice(e.target.value),
         itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 
@@ -199,7 +195,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
         "wanted price",
         "number",
         wantedPrice,
-        (e) => setWantedPrice(parseInt(e.target.value)),
+        (e) => setWantedPrice(e.target.value),
         itemQuickViewData.item !== null // if the item exists, this input should be readOnly
       )}
 

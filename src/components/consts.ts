@@ -2,7 +2,7 @@ export const Categories = [
     "Laptops",
     "Keyboards",
     "Mouses",
-    "Mouse pads",
+    "Mouse-pads",
 ];
 
 export type UserItemDetails = {
@@ -19,8 +19,8 @@ export type StaticItemData = {
   img_url: string;
   seller_address: string;
   seller_email: string;
-  price: number;
-  wanted_price: number;
+  price: string;
+  wanted_price: string;
   group_size_goal: number;
 }
 
@@ -46,7 +46,7 @@ export type ContactData = {
   delivery_address: string;
 }
 
-export type CategoryStore = {
+export type CategoryStoreData = {
   items: ItemData[];
   userItems: UserItem[];
   contactData: ContactData;
@@ -64,7 +64,7 @@ export type StoreActionData = {
   category: string;
   item?: ItemData;
   items?: ItemData[];
-  fetchedData?: CategoryStore;
+  fetchedData?: CategoryStoreData;
   url?: string;
   userUpdateData?: UserItemDetails;
   oldQuantity?: number;
@@ -77,5 +77,6 @@ export type StoreAction = {
 
 export type DispatchFunc =  ({ type, data }: StoreAction) => void;
 export type AsyncDispatchFunc = (action: StoreAction) => Promise<void>;
+export type RemoveCategoryItem = (url: string) => Promise<void>;
 
 export const SUCCESS_STATUS = "success";
