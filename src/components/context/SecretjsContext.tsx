@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { SecretNetworkClient } from "secretjs";
+import { SecretNetworkClient, Wallet } from "secretjs";
 
 // This endpoint is a reverse proxy for a main-net scrt node
 // const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
@@ -7,7 +7,7 @@ import { SecretNetworkClient } from "secretjs";
 // const CONTRACT_ADDRESS = "";
 // const CODE_ID = ;
 
-const NODE_URL = "https://rpc.pulsar.griptapejs.com:443";
+const NODE_URL = "http://40.88.137.151:9091";
 const CHAIN_ID = "pulsar-2";
 
 declare global {
@@ -46,15 +46,18 @@ export const SecretjsContextProvider: React.FC<any> = (props) => {
     // This pops-up a window for the user to allow keplr access to the webpage.
     await window.keplr.enable(CHAIN_ID);
 
-    const keplrOfflineSigner = window.getOfflineSignerOnlyAmino(CHAIN_ID);
-    const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
-
+    // const keplrOfflineSigner = window.getOfflineSignerOnlyAmino(CHAIN_ID);
+    // const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
+    const wallet = new Wallet(
+      "leave mask dinner title adult satisfy track crumble test concert damp bracket eager turtle laptop actual lesson divert hub behave risk write daughter tuition"
+    );
+    const myAddress = wallet.address;
     let secretjs = await SecretNetworkClient.create({
       grpcWebUrl: NODE_URL,
       chainId: CHAIN_ID,
-      wallet: keplrOfflineSigner,
+      wallet: wallet,
       walletAddress: myAddress,
-      encryptionUtils: window.getEnigmaUtils(CHAIN_ID),
+      // encryptionUtils: window.getEnigmaUtils(CHAIN_ID),
     });
 
     setSecretjs(secretjs);

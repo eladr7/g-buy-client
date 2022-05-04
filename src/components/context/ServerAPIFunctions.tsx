@@ -48,7 +48,7 @@ const CODE_ID = 8815;
 // const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 // const CHAIN_ID = "secret-4";
 
-const NODE_URL = "https://rpc.pulsar.griptapejs.com:443";
+const NODE_URL = "http://40.88.137.151:9091";
 const CHAIN_ID = "pulsar-2";
 
 export const makePayment = async (
@@ -98,13 +98,13 @@ export const setViewingKeyInServer = async (
       codeHash: contractHash, // optional but way faster
       msg: {
         set_viewing_key: {
-          key: { viewingKey },
+          key: viewingKey,
         },
       },
       sentFunds: [], // optional
     },
     {
-      gasLimit: 500_000,
+      gasLimit: 100_000,
     }
   );
 

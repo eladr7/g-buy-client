@@ -37,7 +37,7 @@ export const Login: React.FC<ChildComponentProps> = () => {
     let addedSuccessfully = await setViewingKeyInServer(viewingKey, secretjs);
 
     if (addedSuccessfully) {
-      localStorage.setItem("viewing-key", JSON.stringify(viewingKey));
+      localStorage.setItem("viewing-key", viewingKey);
       navigateToMainPage();
       return;
     }
