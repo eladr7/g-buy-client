@@ -1,32 +1,29 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { RouteComponentProps, useHistory } from "react-router-dom";
-import { SecretNetworkClient, Wallet } from "secretjs";
 import { laptopsStore } from "./context/CategoryStore";
 import { secretjsStore } from "./context/SecretjsStore";
 
-interface ChildComponentProps extends RouteComponentProps<any> {
-  /* other props for ChildComponent */
+interface LoginProps {
+  setViewingKey: (viewingKey: string) => void;
 }
-export const Login: React.FC<ChildComponentProps> = () => {
-  const history = useHistory();
+export const Login: React.FC<LoginProps> = ({ setViewingKey }) => {
   // const { secretjs } = useSnapshot(secretjsStore);
 
   // const { secretjs } = useContext(SecretjsContext);
   const [address, setAddress] = useState<string>("");
-  const [viewingKey, setViewingKey] = useState<string>("");
+  const [viewingKeyInput, setViewingKeyInput] = useState<string>("");
 
-  const navigateToMainPage = () => {
-    history.push("/main");
-    history.go(0);
-  };
+  // const navigateToMainPage = () => {
+  //   history.push("/main");
+  //   history.go(0);
+  // };
 
   useEffect(() => {
     // localStorage.setItem("viewing-key", "");
-    const viewingKey = localStorage.getItem("viewing-key");
-    if (viewingKey) {
-      navigateToMainPage();
-      return;
-    }
+    // const viewingKey = localStorage.getItem("viewing-key");
+    // if (viewingKey) {
+    //   navigateToMainPage();
+    //   return;
+    // }
 
     if (secretjsStore.secretjs) {
       setAddress(secretjsStore.secretjs.address);
@@ -38,12 +35,13 @@ export const Login: React.FC<ChildComponentProps> = () => {
     let addedSuccessfully = await laptopsStore.setViewingKeyInServer(
       secretjsStore.secretjs,
       secretjsStore.contractHash,
-      viewingKey
+      viewingKeyInput
     );
 
     if (addedSuccessfully) {
-      localStorage.setItem("viewing-key", viewingKey);
-      navigateToMainPage();
+      localStorage.setItem("viewing-key", viewingKeyInput);
+      setViewingKey(viewingKeyInput);
+      // navigateToMainPage();
       return;
     }
 
@@ -69,7 +67,7 @@ export const Login: React.FC<ChildComponentProps> = () => {
             placeholder="Set your viewing key"
             name="viewing-key"
             type="text"
-            onChange={(e) => setViewingKey(e.target.value)}
+            onChange={(e) => setViewingKeyInput(e.target.value)}
           />
           <input className="form-submit" value="SUBMIT" type="submit" />
         </form>
