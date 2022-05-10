@@ -8,7 +8,7 @@ const CODE_ID = 8914;
 // const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 // const CHAIN_ID = "secret-4";
 
-const NODE_URL = "https://lior.node.scrtlabs.com";
+const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 const CHAIN_ID = "pulsar-2";
 
 declare global {
