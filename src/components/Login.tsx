@@ -6,9 +6,6 @@ interface LoginProps {
   setViewingKey: (viewingKey: string) => void;
 }
 export const Login: React.FC<LoginProps> = ({ setViewingKey }) => {
-  // const { secretjs } = useSnapshot(secretjsStore);
-
-  // const { secretjs } = useContext(SecretjsContext);
   const [address, setAddress] = useState<string>("");
   const [viewingKeyInput, setViewingKeyInput] = useState<string>("");
 

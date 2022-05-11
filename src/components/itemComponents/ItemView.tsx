@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { useSnapshot } from "valtio";
+import React from "react";
 import {
   ItemData,
   ItemQuickViewData,
@@ -27,7 +26,6 @@ export const ItemView: React.FC<ItemViewProps> = ({
   removeCategoryItem,
 }) => {
   const getEditOrJoin = (accountAddress: string, item: ItemData) => {
-    debugger;
     let userItemDetails: UserItemDetails | null;
 
     userItemDetails =

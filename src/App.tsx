@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
 import { MainPage } from "./components/MainPage";
 import { Login } from "./components/Login";
 

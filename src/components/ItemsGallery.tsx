@@ -5,7 +5,6 @@ import { ItemQuickView } from "./itemComponents/ItemQuickView";
 import { CategoryStore } from "./context/CategoryStore";
 import { observer } from "mobx-react";
 import { SecretjsStore, secretjsStore } from "./context/SecretjsStore";
-// import { secretjsStore } from "../App";
 
 interface ItemsGalleryProps {
   category: string;
@@ -18,7 +17,6 @@ const ItemsGallery: React.FC<ItemsGalleryProps> = ({ category, store }) => {
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   useEffect(() => {
-    debugger;
     store.getItemsFromServer(
       secretjsStore.secretjsClient!,
       secretjsStore.contractHash

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { Categories } from "./consts";
 import ObservedItemsGallery from "./ItemsGallery";

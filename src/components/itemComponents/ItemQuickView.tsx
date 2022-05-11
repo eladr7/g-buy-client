@@ -1,4 +1,4 @@
-import React, { FormEvent, useContext, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { findDOMNode } from "react-dom";
 import { ItemData, ItemQuickViewData, UserItemDetails } from "../consts";
 
@@ -90,9 +90,7 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
       email: email!,
       quantity: quantity!,
     };
-    debugger;
     // If the item doesn't already exist, add it
-    // Elad: Change the logic to - only seller adds a product
     if (!itemQuickViewData?.item) {
       // Add a new item!
 
@@ -117,11 +115,6 @@ export const ItemQuickView: React.FC<ItemQuickViewProps> = ({
     }
 
     // Update an existing item
-    // Elad: Check something changed
-    // let initialQuantity = itemQuickViewData.usersItemDetails?.quantity;
-    // if (initialQuantity !== quantity) {
-    //   alert("Nothing changed")
-    // }
     let oldQuantity = itemQuickViewData.userItemDetails
       ? itemQuickViewData.userItemDetails.quantity
       : 0;

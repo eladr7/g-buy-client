@@ -1,13 +1,7 @@
 import { makeAutoObservable, observable } from "mobx";
 import { SecretNetworkClient, Wallet } from "secretjs";
 
-const CONTRACT_ADDRESS = "secret16ypyj8ydfy88axst8a8klhqef5t5zyjqkc3nst";
 const CODE_ID = 8914;
-
-// This endpoint is a reverse proxy for a main-net scrt node
-// const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
-// const CHAIN_ID = "secret-4";
-
 const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
 const CHAIN_ID = "pulsar-2";
 
@@ -79,11 +73,9 @@ export class SecretjsStore {
         this.secretjsClient = secretjsClient;
         this.keplrReady = true;
 
-        debugger;
         this.secretjsClient.query.compute
           .codeHash(CODE_ID)
           .then((contractHash: string) => {
-            debugger;
             this.contractHash = contractHash;
           })
           .catch((e: string) => console.log(e));
@@ -99,5 +91,3 @@ export class SecretjsStore {
   }
 }
 export const secretjsStore = new SecretjsStore();
-
-// export default SecretjsStore;

@@ -1,8 +1,7 @@
 import { makeAutoObservable, observable } from "mobx";
-import { fromUtf8, SecretNetworkClient, Wallet } from "secretjs";
+import { fromUtf8, SecretNetworkClient } from "secretjs";
 import {
   ItemData,
-  ContactData,
   UserItemDetails,
   UserItem,
   CategoryStoreData,
@@ -12,15 +11,6 @@ import {
 
 type SetViewingKeyResult = {
   set_viewing_key: {
-    status: string;
-  };
-};
-
-type FetchedItems = {
-  fetched_items: {
-    items: ItemData[];
-    user_items: UserItem[];
-    contact_data: ContactData;
     status: string;
   };
 };
@@ -43,27 +33,13 @@ type RemoveItemResult = {
   };
 };
 
-// const CONTRACT_ADDRESS = "secret1ncfk9dqfdvd9gcvkfkcrgj0jpludkk9wsm5g5l";
 const CONTRACT_ADDRESS = "secret16ypyj8ydfy88axst8a8klhqef5t5zyjqkc3nst";
-const CODE_ID = 8914;
-// const CODE_ID = 8815;
-
-// This endpoint is a reverse proxy for a main-net scrt node
-// const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
-// const CHAIN_ID = "secret-4";
-
-const NODE_URL = "https://elad.uksouth.cloudapp.azure.com";
-
-const CHAIN_ID = "pulsar-2";
 
 const addItemToCategory = async (
   secretjsClient: SecretNetworkClient,
   contractHash: string,
   item: ItemData
 ) => {
-  // return true;
-  // const contractHash = await secretjsClient.query.compute.codeHash(CODE_ID);
-  debugger;
   const result = await secretjsClient.tx.compute.executeContract(
     {
       sender: secretjsClient.address,
@@ -71,7 +47,7 @@ const addItemToCategory = async (
       codeHash: contractHash, // optional but way faster
       msg: {
         add_item: {
-          ...item.static_data, // elad: Adjust fileds names to server (e.g. sellerEmail... )
+          ...item.static_data,
         },
       },
       sentFunds: [], // optional
@@ -80,12 +56,10 @@ const addItemToCategory = async (
       gasLimit: 100_000,
     }
   );
-  debugger;
   const {
     add_item: { status },
   } = JSON.parse(fromUtf8(result.data[0])) as AddItemResult;
 
-  // Elad: Charge the user!
   if (status !== SUCCESS_STATUS) {
     alert("Item update failed");
     throw new TypeError("Failed to add item");
@@ -97,7 +71,6 @@ const addItemToCategory = async (
 // MobX implementation
 export class CategoryStore {
   category: string;
-  //   secretjsClient: SecretNetworkClient | null = null;
   store: CategoryStoreData = {
     items: [],
     userItems: [],
@@ -114,32 +87,7 @@ export class CategoryStore {
       { autoBind: true }
     );
     this.category = category;
-    // this.loadSecretjs();
   }
-
-  //   loadSecretjs = () => {
-  //     const wallet = new Wallet(
-  //       "leave mask dinner title adult satisfy track crumble test concert damp bracket eager turtle laptop actual lesson divert hub behave risk write daughter tuition"
-  //     );
-  //     const myAddress = wallet.address;
-  //     SecretNetworkClient.create({
-  //       grpcWebUrl: NODE_URL,
-  //       chainId: CHAIN_ID,
-  //       wallet: wallet,
-  //       walletAddress: myAddress,
-  //       // encryptionUtils: window.getEnigmaUtils(CHAIN_ID),
-  //     })
-  //       .then((secretjsClient) => (this.secretjsClient = secretjsClient))
-  //       .catch((e) => e);
-  //   };
-
-  //   setSecretjs(secretjs: SecretNetworkClient) {
-  //     this.secretjs = secretjs;
-  //   }
-
-  //   get secretjs() {
-  //     return this.secretjsClient;
-  //   }
 
   get items() {
     return this.store.items;
@@ -163,9 +111,6 @@ export class CategoryStore {
     newQuantity: number,
     wantedPrice: string
   ) {
-    // secretcli tx bank send secret124yc2x4v7n3qe3q0zwd8a4vznm4247uynp7efr secret1nxcwlf5x86yluxr92fretj6yu77z6lnjtugqes 50000uscrt
-    // const contractHash = await secretjsClient.query.compute.codeHash(CODE_ID);
-    debugger;
     let ammountToPay: number = 0;
     if (newQuantity - oldQuantity < 0) {
       // The user should be refunded, the refund will be made in the server side.
@@ -196,8 +141,6 @@ export class CategoryStore {
     contractHash: string,
     viewingKey: string
   ) {
-    // return true;
-    // const contractHash = await secretjsClient.query.compute.codeHash(CODE_ID);
     const result = await secretjsClient.tx.compute.executeContract(
       {
         sender: secretjsClient.address,
@@ -219,7 +162,6 @@ export class CategoryStore {
       set_viewing_key: { status },
     } = JSON.parse(fromUtf8(result.data[0])) as SetViewingKeyResult;
 
-    // Elad: Charge/refund the user!
     return status === SUCCESS_STATUS;
   }
 
@@ -231,7 +173,6 @@ export class CategoryStore {
       return this.store;
     }
     const viewingKey = localStorage.getItem("viewing-key");
-    // const contractHash = await secretjsClient.query.compute.codeHash(CODE_ID);
     const result = await secretjsClient.query.compute
       .queryContract({
         contractAddress: CONTRACT_ADDRESS,
@@ -246,11 +187,6 @@ export class CategoryStore {
       })
       .then((result) => result)
       .catch((e) => e);
-    // debugger;
-    // const {
-    //   fetched_items: { items, user_items, contact_data, status },
-    // } = result as FetchedItems;
-    // } = JSON.parse(fromUtf8(result)) as FetchedItems;
 
     if (result.status !== SUCCESS_STATUS) {
       alert("Fethcing the items failed " + result.status);
@@ -261,8 +197,6 @@ export class CategoryStore {
     this.store.contactData = result.contact_data;
     this.store.userItems = result.user_items;
     this.store.loaded = true;
-
-    // return this.store;
   }
 
   addItemToCategory(
@@ -280,8 +214,6 @@ export class CategoryStore {
     contractHash: string,
     url: string
   ) {
-    debugger;
-    // return true;
     const viewingKey = localStorage.getItem("viewing-key");
     const result = await secretjsClient.tx.compute.executeContract(
       {
@@ -306,7 +238,6 @@ export class CategoryStore {
         remove_item: { status },
       } = JSON.parse(fromUtf8(result.data[0])) as RemoveItemResult;
 
-      // Elad: Charge/refund the user!
       if (status !== SUCCESS_STATUS) {
         alert("Item removal failed");
         throw new TypeError("Item removal failed");
@@ -318,8 +249,6 @@ export class CategoryStore {
         );
       }
     }
-
-    // return this.store;
   }
 
   async updateItem(
@@ -336,7 +265,6 @@ export class CategoryStore {
       alert("Same quantity - nothing to update!");
       return;
     }
-    debugger;
     let wantedPrice = item.static_data.wanted_price;
     let payed = await this.makePayment(
       secretjsClient,
@@ -370,10 +298,6 @@ export class CategoryStore {
     url: string,
     userUpdateData: UserItemDetails
   ) {
-    // return true;
-    // const contractHash = await secretjsClient.query.compute.codeHash(CODE_ID);
-    debugger;
-
     const result = await secretjsClient.tx.compute.executeContract(
       {
         sender: secretjsClient.address,
@@ -393,19 +317,17 @@ export class CategoryStore {
             },
           },
         },
-        sentFunds: [{ denom: "uscrt", amount: "140000000" }], // optional
+        sentFunds: [], // optional
       },
       {
         gasLimit: 100_000,
       }
     );
-    debugger;
     try {
       const {
         update_item: { status },
       } = JSON.parse(fromUtf8(result.data[0])) as UpdateItemResult;
 
-      // Elad: Charge/refund the user!
       return status === SUCCESS_STATUS;
     } catch {
       return result.data.length > 0;
@@ -413,8 +335,6 @@ export class CategoryStore {
   }
 
   async updateItemInLocalStore(url: string, userUpdateData: UserItemDetails) {
-    debugger;
-    // For updating the item's view
     let itemIndex = this.store.items.findIndex(
       (item: ItemData) => item.static_data.url === url
     );
@@ -431,7 +351,6 @@ export class CategoryStore {
       // New user
 
       if (userUpdateData!.quantity === 0) {
-        // Elad - enforce this in the form itself
         alert("Cannot participate with 0 items");
         return;
       }
@@ -442,13 +361,10 @@ export class CategoryStore {
       });
       this.store.items[itemIndex].current_group_size! +=
         userUpdateData!.quantity;
-      debugger;
       this.store.contactData = {
         delivery_address: userUpdateData.deliveryAddress,
         email: userUpdateData.email,
       };
-      // this.store.contactData.delivery_address = userUpdateData.deliveryAddress;
-      // this.store.contactData.email = userUpdateData.email;
       return;
     }
 
@@ -461,7 +377,6 @@ export class CategoryStore {
 
     if (this.store.userItems[userItemIndex].quantity === 0) {
       // Remove this item from the user's items
-      // Elad: Refund the user!
       this.store.userItems.splice(userItemIndex, 1);
     }
 

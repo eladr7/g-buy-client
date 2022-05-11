@@ -1,9 +1,6 @@
-import React from "react";
-
 import { ItemView } from "./ItemView";
 import NoResults from "./NoResults";
 import {
-  AsyncDispatchFunc,
   CategoryStoreData,
   ContactData,
   ItemData,
@@ -78,7 +75,6 @@ const ItemsViewLoader = {
     removeCategoryItem: RemoveCategoryItem
   ) {
     const filterredItems = this.filterItems(categoryStore, searchPhrase);
-    debugger;
 
     const objectsViews = this.getItemsView(
       filterredItems,
